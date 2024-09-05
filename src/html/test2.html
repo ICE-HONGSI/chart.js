@@ -1,0 +1,192 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Document</title>
+</head>
+<style>
+    .button {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #2196f3;
+        color: #fff;
+        border-radius: 30px;
+        border: none;
+        box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease 0s;
+        cursor: pointer;
+    }
+
+    .button:hover {
+        background-color: #1976d2;
+    }
+</style>
+
+<body>
+<div style="width: 1000px" style="height: 1000px">
+    <canvas id="myChart"></canvas>
+</div>
+
+<input class="button" type="button" value="월별" onclick="f_chart1()" />
+<input class="button" type="button" value="부위별" onclick="f_chart2()" />
+<input class="button" type="button" value="연령별" onclick="f_chart3()" />
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+<script>
+    const ctx = document.querySelector('#myChart');
+    let myChart;
+
+    function f_chart1() {
+        if (myChart) {
+            myChart.destroy();  // 이전 차트가 있다면 삭제
+        }
+        myChart = new Chart(ctx, {
+            type: 'doughnut',  // 도넛 차트
+            data: {
+                labels: ['1월', '2월', '3월', '4월', '5월', '6월'],
+                datasets: [{
+                    label: '월별 데이터',
+                    data: [],  // 데이터를 나중에 채움
+                    borderWidth: 1,
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+            }
+        });
+
+        $.ajax({
+            method: 'get',
+            url: 'http://localhost:8080/api/chart-data1',
+            dataType: 'json',
+            success: function (res) {
+                const values = res.data.map(item => item.value);
+                myChart.data.datasets[0].data = values;
+                myChart.update();
+            },
+            error: function (xhr, status, error) {
+                console.error("Error fetching data:", error);
+            }
+        });
+    }
+
+    function f_chart2() {
+        if (myChart) {
+            myChart.destroy();  // 이전 차트가 있다면 삭제
+        }
+        myChart = new Chart(ctx, {
+            type: 'bar',  // 바 차트
+            data: {
+                labels: ['팔', '다리', '손가락', '발목', '어깨', '허리'],
+                datasets: [{
+                    label: '부위별 데이터',
+                    data: [],  // 데이터를 나중에 채움
+                    borderWidth: 1,
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                    },
+                },
+            }
+        });
+
+        $.ajax({
+            method: 'get',
+            url: 'http://localhost:8080/api/chart-data2',
+            dataType: 'json',
+            success: function (res) {
+                const values = res.data.map(item => item.value);
+                myChart.data.datasets[0].data = values;
+                myChart.update();
+            },
+            error: function (xhr, status, error) {
+                console.error("Error fetching data:", error);
+            }
+        });
+    }
+
+    function f_chart3() {
+        if (myChart) {
+            myChart.destroy();  // 이전 차트가 있다면 삭제
+        }
+        myChart = new Chart(ctx, {
+            type: 'line',  // 라인 차트
+            data: {
+                labels: ['10대', '20대', '30대', '40대', '50대', '60대'],
+                datasets: [{
+                    label: '연령별 데이터',
+                    data: [],  // 데이터를 나중에 채움
+                    borderWidth: 1,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    fill: false,
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                    },
+                },
+            }
+        });
+
+        $.ajax({
+            method: 'get',
+            url: 'http://localhost:8080/api/chart-data3',
+            dataType: 'json',
+            success: function (res) {
+                const values = res.data.map(item => item.value);
+                myChart.data.datasets[0].data = values;
+                myChart.update();
+            },
+            error: function (xhr, status, error) {
+                console.error("Error fetching data:", error);
+            }
+        });
+    }
+</script>
+</body>
+
+</html>
