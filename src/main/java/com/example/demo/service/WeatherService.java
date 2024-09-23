@@ -1,111 +1,122 @@
 package com.example.demo.service;
 
-import com.example.demo.entity.Weather;
-import com.example.demo.repository.WeatherRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-
-import java.net.URLEncoder;
-import java.time.LocalDateTime;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.springframework.stereotype.Service;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 @Service
 public class WeatherService {
 
-    @Autowired
-    private WeatherRepository weatherRepository;
+    // 하루 시간대별 날씨 데이터를 가져오는 메소드
+    public static List<String> getDailyWeather(int x, int y) {
+        HttpURLConnection con = null;
+        Map<String, String[]> weatherDataMap = new TreeMap<>(); // 시간대별 데이터를 저장할 TreeMap (시간대 -> 데이터)
+        String s = null; // 에러 메시지
 
-    private final String apiUrl = "https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst";
-    private final String serviceKey = "69YYtu1XspY1rFpEKlo8VJ5mQhO8ab%2BldbDFTsuz7QuxRAucG6e%2BpiDonS0dCWh%2B7V8Mw7cOTXHaFC%2Fs5%2BOuzQ%3D%3D";  // 이미 인코딩된 서비스 키
-
-    // 매 1시간마다 실행
-    @Scheduled(fixedRate = 3600000)
-    public void fetchAndStoreWeatherData() {
         try {
-            String nx = "55";  // 예시 좌표
-            String ny = "127";
-            LocalDateTime now = LocalDateTime.now();
-            String baseDate = now.format(DateTimeFormatter.ofPattern("yyyyMMdd"));  // 예시: 20240912
-            String baseTime = "0500";  // 예시: 0500
-            String dataType = "json";  // json 데이터 형식
-            String pageNo = "1";
-            String numOfRows = "1000";
+            // 현재 날짜의 데이터를 요청
+            LocalDate today = LocalDate.now();
 
-            // URL 생성
-            String url = buildUrl(nx, ny, baseDate, baseTime, dataType, pageNo, numOfRows);
-            System.out.println("Generated URL: " + url);
+            URL url = new URL(
+                    "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtFcst"
+                            + "?ServiceKey=" + "69YYtu1XspY1rFpEKlo8VJ5mQhO8ab%2BldbDFTsuz7QuxRAucG6e%2BpiDonS0dCWh%2B7V8Mw7cOTXHaFC%2Fs5%2BOuzQ%3D%3D"
+                            + "&pageNo=3"
+                            + "&numOfRows=3000"
+                            + "&base_date=" + today.format(DateTimeFormatter.ofPattern("yyyyMMdd"))
+                            + "&base_time=0600"
+                            + "&nx=" + x
+                            + "&ny=" + y
+            );
 
-            // OpenAPI 호출
-            RestTemplate restTemplate = new RestTemplate();
-            ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+            // API 호출 및 결과 파싱
+            con = (HttpURLConnection) url.openConnection();
+            Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(con.getInputStream());
 
-            if (response.getStatusCode().is2xxSuccessful()) {
-                String weatherData = response.getBody();
-                if (weatherData != null && !weatherData.contains("SERVICE_KEY_IS_NOT_REGISTERED_ERROR")) {
-                    saveWeatherData(weatherData);
+            boolean ok = false; // <resultCode>00</resultCode> 성공 여부
+
+            Element e;
+            NodeList ns = doc.getElementsByTagName("header");
+            if (ns.getLength() > 0) {
+                e = (Element) ns.item(0);
+                if ("00".equals(e.getElementsByTagName("resultCode").item(0).getTextContent())) {
+                    ok = true; // 성공 여부
                 } else {
-                    System.err.println("API 오류: " + weatherData);
+                    s = e.getElementsByTagName("resultMsg").item(0).getTextContent(); // 에러 메시지
+                }
+            }
+
+            if (ok) {
+                String fd, ft; // 예보 날짜와 시간
+                String pty = null; // 강수형태
+                String sky = null; // 하늘상태
+                String cat; // category
+                String val; // 예보 값
+
+                ns = doc.getElementsByTagName("item");
+                for (int i = 0; i < ns.getLength(); i++) {
+                    e = (Element) ns.item(i);
+
+                    fd = e.getElementsByTagName("fcstDate").item(0).getTextContent(); // 예보 날짜
+                    ft = e.getElementsByTagName("fcstTime").item(0).getTextContent(); // 예보 시각
+
+                    String[] weatherData = weatherDataMap.getOrDefault(ft, new String[]{fd, ft, null, null, null});
+
+                    // 각 카테고리별 값 처리
+                    cat = e.getElementsByTagName("category").item(0).getTextContent();
+                    val = e.getElementsByTagName("fcstValue").item(0).getTextContent();
+
+                    if ("PTY".equals(cat)) weatherData[2] = parsePty(val); // 강수형태
+                    else if ("T1H".equals(cat)) weatherData[3] = val; // 기온
+                    else if ("REH".equals(cat)) weatherData[4] = val; // 습도
+
+                    weatherDataMap.put(ft, weatherData); // 시간대별 데이터 저장
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            if (con != null) con.disconnect(); // 연결 해제
         }
-    }
 
-    // URL 생성 메서드
-    public String buildUrl(String nx, String ny, String baseDate, String baseTime, String dataType, String pageNo, String numOfRows) {
-        return apiUrl +
-                "?serviceKey=" + "69YYtu1XspY1rFpEKlo8VJ5mQhO8ab%2BldbDFTsuz7QuxRAucG6e%2BpiDonS0dCWh%2B7V8Mw7cOTXHaFC%2Fs5%2BOuzQ%3D%3D" +
-                "&pageNo=" + pageNo +
-                "&numOfRows=" + numOfRows +
-                "&dataType=" + dataType +
-                "&base_date=" + baseDate +
-                "&base_time=" + baseTime +
-                "&nx=" + nx +
-                "&ny=" + ny;
-    }
+        // 출력용 데이터 포맷팅
+        List<String> formattedWeatherData = new ArrayList<>();
 
-    // 받은 데이터를 DB에 저장하는 메서드
-    private void saveWeatherData(String jsonData) {
-        Weather weather = new Weather();
-        weather.setTime(LocalDateTime.now().toString());
-        weather.setJsonData(jsonData);
-        weatherRepository.save(weather);
-    }
-
-    // 실시간 API 데이터를 가져오는 메서드 (요청 시 호출)
-    public Weather getWeather(String nx, String ny) {
-        try {
-            LocalDateTime now = LocalDateTime.now();
-            String baseDate = now.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-            String baseTime = "0500";  // 예시 시간
-            String dataType = "json";
-            String pageNo = "1";
-            String numOfRows = "1000";
-
-            String url = buildUrl(nx, ny, baseDate, baseTime, dataType, pageNo, numOfRows);
-            System.out.println("Generated URL: " + url);
-
-            RestTemplate restTemplate = new RestTemplate();
-            ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
-
-                String weatherData = response.getBody();
-                    Weather weather = new Weather();
-                    weather.setJsonData(weatherData);
-                    weather.setTime(LocalDateTime.now().toString());
-                    return weather;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("Error fetching weather data");
+        // 시간 순으로 정렬된 TreeMap에서 데이터를 포맷팅하여 출력
+        for (String[] data : weatherDataMap.values()) {
+            String formattedData = String.format("날짜: %s   시간: %s  날씨: %s  기온: %s°C  습도: %s%%",
+                    data[0],
+                    data[1],
+                    data[2] != null ? data[2] : "데이터 없음",
+                    data[3] != null ? data[3] : "데이터 없음",
+                    data[4] != null ? data[4] : "데이터 없음");
+            formattedWeatherData.add(formattedData);
         }
+
+        return formattedWeatherData; // 포맷팅된 데이터 반환
     }
 
-    // 최신 날씨 데이터를 가져오는 메서드
-    public Weather getLatestWeather() {
-        return weatherRepository.findTopByOrderByIdDesc();
+    // 강수형태를 해석하는 메소드
+    private static String parsePty(String pty) {
+        switch (pty) {
+            case "0": return "맑음";
+            case "1": return "비";
+            case "2": return "비/눈";
+            case "3": return "눈";
+            case "5": return "빗방울";
+            case "6": return "빗방울눈날림";
+            case "7": return "눈날림";
+            default: return null;
+        }
     }
 }
