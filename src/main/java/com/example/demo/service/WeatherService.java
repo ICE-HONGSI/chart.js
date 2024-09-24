@@ -20,9 +20,35 @@ public class WeatherService {
 
     // 하루 시간대별 날씨 데이터를 가져오는 메소드
     public static List<String> getDailyWeather(int x, int y) {
-        HttpURLConnection con = null;
         Map<String, String[]> weatherDataMap = new TreeMap<>(); // 시간대별 데이터를 저장할 TreeMap (시간대 -> 데이터)
-        String s = null; // 에러 메시지
+
+        // 여러 시간대의 데이터를 요청할 base_time 목록
+        String[] baseTimes = {"0000", "0600", "1200", "1500"};
+
+        for (String baseTime : baseTimes) {
+            fetchWeatherDataForBaseTime(x, y, baseTime, weatherDataMap);
+        }
+
+        // 출력용 데이터 포맷팅
+        List<String> formattedWeatherData = new ArrayList<>();
+
+        // 시간 순으로 정렬된 TreeMap에서 데이터를 포맷팅하여 출력
+        for (String[] data : weatherDataMap.values()) {
+            String formattedData = String.format("날짜: %s   시간: %s  날씨: %s  기온: %s°C  습도: %s%%",
+                    data[0],
+                    data[1],
+                    data[2] != null ? data[2] : "데이터 없음",
+                    data[3] != null ? data[3] : "데이터 없음",
+                    data[4] != null ? data[4] : "데이터 없음");
+            formattedWeatherData.add(formattedData);
+        }
+
+        return formattedWeatherData; // 포맷팅된 데이터 반환
+    }
+
+    // 특정 base_time에 대한 날씨 데이터를 가져오는 메소드
+    private static void fetchWeatherDataForBaseTime(int x, int y, String baseTime, Map<String, String[]> weatherDataMap) {
+        HttpURLConnection con = null;
 
         try {
             // 현재 날짜의 데이터를 요청
@@ -31,10 +57,10 @@ public class WeatherService {
             URL url = new URL(
                     "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtFcst"
                             + "?ServiceKey=" + "69YYtu1XspY1rFpEKlo8VJ5mQhO8ab%2BldbDFTsuz7QuxRAucG6e%2BpiDonS0dCWh%2B7V8Mw7cOTXHaFC%2Fs5%2BOuzQ%3D%3D"
-                            + "&pageNo=3"
-                            + "&numOfRows=3000"
+                            + "&pageNo=1"
+                            + "&numOfRows=1000"
                             + "&base_date=" + today.format(DateTimeFormatter.ofPattern("yyyyMMdd"))
-                            + "&base_time=0600"
+                            + "&base_time=" + baseTime
                             + "&nx=" + x
                             + "&ny=" + y
             );
@@ -51,15 +77,12 @@ public class WeatherService {
                 e = (Element) ns.item(0);
                 if ("00".equals(e.getElementsByTagName("resultCode").item(0).getTextContent())) {
                     ok = true; // 성공 여부
-                } else {
-                    s = e.getElementsByTagName("resultMsg").item(0).getTextContent(); // 에러 메시지
                 }
             }
 
             if (ok) {
                 String fd, ft; // 예보 날짜와 시간
                 String pty = null; // 강수형태
-                String sky = null; // 하늘상태
                 String cat; // category
                 String val; // 예보 값
 
@@ -88,22 +111,6 @@ public class WeatherService {
         } finally {
             if (con != null) con.disconnect(); // 연결 해제
         }
-
-        // 출력용 데이터 포맷팅
-        List<String> formattedWeatherData = new ArrayList<>();
-
-        // 시간 순으로 정렬된 TreeMap에서 데이터를 포맷팅하여 출력
-        for (String[] data : weatherDataMap.values()) {
-            String formattedData = String.format("날짜: %s   시간: %s  날씨: %s  기온: %s°C  습도: %s%%",
-                    data[0],
-                    data[1],
-                    data[2] != null ? data[2] : "데이터 없음",
-                    data[3] != null ? data[3] : "데이터 없음",
-                    data[4] != null ? data[4] : "데이터 없음");
-            formattedWeatherData.add(formattedData);
-        }
-
-        return formattedWeatherData; // 포맷팅된 데이터 반환
     }
 
     // 강수형태를 해석하는 메소드
