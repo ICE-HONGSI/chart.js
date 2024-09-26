@@ -3,11 +3,14 @@ package com.example.demo.controller;
 import ch.qos.logback.core.model.Model;
 import com.example.demo.service.MapService;
 import com.example.demo.service.WeatherService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
 
@@ -59,5 +62,31 @@ public class WeatherController {
     @GetMapping("/weather/chart")
     public String showWeatherChartPage() {
         return "weatherChart";  // weatherChart.html 페이지를 렌더링
+    }
+
+    // CSV 파일로 날씨 데이터를 추출하는 엔드포인트
+    @GetMapping("/weather/download-csv")
+    public void downloadCsv(@RequestParam String address, HttpServletResponse response) throws IOException {
+        // MapService에서 주소로 좌표(x, y) 받아오기
+        Map<String, String> xy = mapService.getMapAddress(address);
+        int x = (int) Math.round(Double.parseDouble(xy.get("x")));
+        int y = (int) Math.round(Double.parseDouble(xy.get("y")));
+        // 좌표를 이용하여 WeatherService에서 날씨 정보 받아오기
+        List<String[]> weatherData = weatherService.getDailyWeatherAsArray(y, x);
+
+        // CSV 파일 응답 설정
+        response.setContentType("text/csv");
+        response.setHeader("Content-Disposition", "attachment; filename=\"weather-data.csv\"");
+
+        // CSV 파일 쓰기
+        PrintWriter writer = response.getWriter();
+        writer.println("Time,Temperature,Humidity");  // CSV 헤더 작성
+
+        for (String[] data : weatherData) {
+            writer.println(String.join(",", data[0], data[1], data[2]));  // CSV 각 행 작성
+        }
+
+        writer.flush();
+        writer.close();
     }
 }
