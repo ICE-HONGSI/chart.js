@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mixed Chart Example</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .chart-container {
+            width: 80%;
+            margin: 0 auto;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #2196f3;
+            color: #fff;
+            border-radius: 30px;
+            border: none;
+            box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease 0s;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background-color: #1976d2;
+        }
+    </style>
+</head>
+<body>
+
+<div class="chart-container">
+    <canvas id="myMixedChart"></canvas>
+</div>
+
+<input class="button" type="button" value="월별" onclick="f_chart1()" />
+<input class="button" type="button" value="부위별" onclick="f_chart2()" />
+<input class="button" type="button" value="연령별" onclick="f_chart3()" />
+<input class="button" type="button" value="발전량/SOC" onclick="f_chart4()" />
+<input class="button" type="button" value="발전 트렌드" onclick="f_chart5()" />
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const ctx = document.getElementById('myMixedChart').getContext('2d');
+    let myChart;
+
+    function f_chart1() {
+        if (myChart) {
+            myChart.destroy();  // 이전 차트가 있다면 삭제
+        }
+        myChart = new Chart(ctx, {
+            type: 'doughnut',  // 도넛 차트
+            data: {
+                labels: ['1월', '2월', '3월', '4월', '5월', '6월'],
+                datasets: [{
+                    label: '월별 데이터',
+                    data: [10, 20, 30, 40, 50, 60],  // 예시 데이터
+                    borderWidth: 1,
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+            }
+        });
+    }
+
+    function f_chart2() {
+        if (myChart) {
+            myChart.destroy();  // 이전 차트가 있다면 삭제
+        }
+        myChart = new Chart(ctx, {
+            type: 'bar',  // 바 차트
+            data: {
+                labels: ['팔', '다리', '손가락', '발목', '어깨', '허리'],
+                datasets: [{
+                    label: '부위별 데이터',
+                    data: [15, 25, 35, 45, 55, 65],  // 예시 데이터
+                    borderWidth: 1,
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                    },
+                },
+            }
+        });
+    }
+
+    function f_chart3() {
+        if (myChart) {
+            myChart.destroy();  // 이전 차트가 있다면 삭제
+        }
+        myChart = new Chart(ctx, {
+            type: 'line',  // 라인 차트
+            data: {
+                labels: ['10대', '20대', '30대', '40대', '50대', '60대'],
+                datasets: [{
+                    label: '연령별 데이터',
+                    data: [5, 15, 25, 35, 45, 55],  // 예시 데이터
+                    borderWidth: 1,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    fill: false,
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                    },
+                },
+            }
+        });
+    }
+
+    // 새로 추가된 함수 f_chart4 (발전량/SOC 차트 그리기)
+    function f_chart4() {
+        if (myChart) {
+            myChart.destroy();  // 이전 차트가 있다면 삭제
+        }
+        myChart = new Chart(ctx, {
+            type: 'bar', // 기본 차트 타입을 막대 그래프로 설정
+            data: {
+                labels: ['00시', '01시', '02시', '03시', '04시', '05시', '06시', '07시', '08시', '09시', '10시', '11시', '12시', '13시', '14시', '15시', '16시', '17시', '18시', '19시', '20시', '21시', '22시', '23시'],
+                datasets: [{
+                    label: '발전량 (kWh)',
+                    data: [10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120, 125],
+                    backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }, {
+                    label: '충전량 (kWh)',
+                    data: [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120],
+                    backgroundColor: 'rgba(255, 205, 86, 0.6)',
+                    borderColor: 'rgba(255, 205, 86, 1)',
+                    borderWidth: 1
+                }, {
+                    label: '방전량 (kWh)',
+                    data: [0, 0, 0, 0, 0, 0, 15, 30, 45, 60, 75, 90, 95, 85, 70, 50, 30, 15, 5, 0, 0, 0, 0, 0],
+                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }, {
+                    type: 'line',
+                    label: 'SOC (%)',
+                    data: [0, 0, 0, 0, 0, 0, 15, 30, 45, 60, 75, 90, 95, 85, 70, 50, 30, 15, 5, 0, 0, 0, 0, 0],
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    fill: false,
+                    yAxisID: 'y-axis-2' // 별도의 Y축을 사용하여 % 값 표시
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'kWh'
+                        }
+                    },
+                    'y-axis-2': {
+                        beginAtZero: true,
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: '% SOC'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    }
+                }
+            }
+        });
+    }
+    function f_chart5() {
+        if (myChart) {
+            myChart.destroy();  // 이전 차트가 있다면 삭제
+        }
+        myChart = new Chart(ctx, {
+            type: 'bar', // 기본 차트 타입을 막대 그래프로 설정
+            data: {
+                labels: ['00시', '01시', '02시', '03시', '04시', '05시', '06시', '07시', '08시', '09시', '10시', '11시', '12시', '13시', '14시', '15시', '16시', '17시', '18시', '19시', '20시', '21시', '22시', '23시'],
+                datasets: [{
+                    label: '발전량 (kWh)',
+                    data: [0, 0, 0, 0, 0, 0, 15, 30, 45, 60, 75, 90, 95, 85, 70, 50, 30, 15, 5, 0, 0, 0, 0, 0],
+                    backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }, {
+                    label: '충전 전력 (kW)',
+                    data: [0, 0, 0, 0, 0, 0, 20, 40, 60, 80, 95, 100, 95, 80, 60, 40, 20, 10, 5, 0, 0, 0, 0, 0],
+                    backgroundColor: 'rgba(255, 205, 86, 0.6)',
+                    borderColor: 'rgba(255, 205, 86, 1)',
+                    borderWidth: 1
+                }, {
+                    label: '방전 전력 (kW)',
+                    data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 95, 90, 80, 70],
+                    backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }, {
+                    type: 'line',
+                    label: 'SOC (%)',
+                    data: [100, 100, 100, 100, 100, 100, 100, 95, 90, 85, 80, 75, 70, 65, 60, 55, 50, 45, 40, 35, 30, 25, 20, 15],
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    fill: false,
+                    yAxisID: 'y-axis-2' // 별도의 Y축을 사용하여 % 값 표시
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'kW'
+                        }
+                    },
+                    'y-axis-2': {
+                        beginAtZero: true,
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: '% SOC'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    }
+                }
+            }
+        });
+    }
+</script>
+
+</body>
+</html>

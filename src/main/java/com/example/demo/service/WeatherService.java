@@ -126,4 +126,19 @@ public class WeatherService {
             default: return null;
         }
     }
+    public List<String[]> getDailyWeatherAsArray(int x, int y) {
+        Map<String, String[]> weatherDataMap = new TreeMap<>();
+        String[] baseTimes = {"0000", "0600", "1200", "1800"};
+
+        for (String baseTime : baseTimes) {
+            fetchWeatherDataForBaseTime(x, y, baseTime, weatherDataMap);
+        }
+
+        List<String[]> weatherDataArray = new ArrayList<>();
+        for (String[] data : weatherDataMap.values()) {
+            weatherDataArray.add(new String[]{data[1], data[3], data[4]}); // 시간, 기온, 습도
+        }
+
+        return weatherDataArray;
+    }
 }
