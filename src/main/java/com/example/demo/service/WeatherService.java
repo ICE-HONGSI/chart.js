@@ -126,6 +126,7 @@ public class WeatherService {
             default: return null;
         }
     }
+
     public List<String[]> getDailyWeatherAsArray(int x, int y) {
         Map<String, String[]> weatherDataMap = new TreeMap<>();
         String[] baseTimes = {"0000", "0600", "1200", "1800"};
@@ -141,4 +142,5 @@ public class WeatherService {
 
         return weatherDataArray;
     }
+
 }

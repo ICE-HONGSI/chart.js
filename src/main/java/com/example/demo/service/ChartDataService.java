@@ -50,4 +50,5 @@ public class ChartDataService {
                 .collect(Collectors.toList());
         return ResponseEntity.ok(Map.of("data", dataDTOs));
     }
+
 }
