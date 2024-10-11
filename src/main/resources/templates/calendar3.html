@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>jQuery Datepicker & Calendar Example</title>
+
+    <!-- fullCalendar CSS (최신 버전) -->
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css' rel='stylesheet' />
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/calendar.css">
+
+</head>
+<body>
+
+<p>조회를 원하는 날짜를 선택해주세요~ <br>
+    <input type="text" id="datepicker1">
+</p>
+
+<div id="calendar"></div> <!-- 캘린더가 표시될 영역 -->
+
+<!-- jQuery -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+<!-- fullCalendar JS (최신 버전) -->
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
+
+<!-- Custom JS -->
+<script src="js/calendar.js"></script>
+
+<script>
+    $(function() {
+        // Datepicker 설정
+        $("#datepicker1, #datepicker2").datepicker({
+            dateFormat: 'yy-mm-dd',
+            showOtherMonths: true,
+            showMonthAfterYear: true,
+            changeYear: true,
+            changeMonth: true,
+            showOn: "both",
+            buttonImage: "http://jqueryui.com/resources/demos/datepicker/images/calendar.gif",
+            buttonImageOnly: true,
+            buttonText: "선택",
+            yearSuffix: "년",
+            monthNamesShort: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'],
+            monthNames: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'],
+            dayNamesMin: ['일','월','화','수','목','금','토'],
+            dayNames: ['일요일','월요일','화요일','수요일','목요일','금요일','토요일'],
+            minDate: "-5Y",
+            maxDate: "+5Y"
+        });
+
+        // 초기값을 오늘 날짜로 설정
+        $('#datepicker1, #datepicker2').datepicker('setDate', 'today');
+
+        // 캘린더 초기화
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            initialDate: new Date(),  // 현재 날짜로 설정
+        });
+
+        calendar.render();
+
+        // Datepicker에서 날짜를 선택하면 캘린더 날짜 이동
+        $("#datepicker1, #datepicker2").on("change", function() {
+            var selectedDate = $(this).datepicker("getDate");
+            if (selectedDate) {
+                calendar.gotoDate(selectedDate); // 선택한 날짜로 캘린더 이동
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
