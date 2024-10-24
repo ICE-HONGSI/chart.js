@@ -29,7 +29,7 @@ public class BmsController {
         List<BmsDTO> bmsData = bmsService.getBmsData();
         model.addAttribute("currentDate", LocalDate.now().toString());
         model.addAttribute("bmsData", bmsData);
-        return "html/bms_info_home"; // bms_info_home.html 템플릿을 반환
+        return "html/bms/bms_info_home"; // bms_info_home.html 템플릿을 반환
     }
     @GetMapping("/pcs")
     public String pcsInfo() {
@@ -47,6 +47,6 @@ public class BmsController {
     @GetMapping("/event")
     public String eventLog(Model model) {
         model.addAttribute("currentDate", LocalDate.now().toString());
-        return "html/event_log_page"; // 타임리프 템플릿 (event_log_page.html)
+        return "html/bms/event_log_page"; // 타임리프 템플릿 (event_log_page.html)
     }
 }
