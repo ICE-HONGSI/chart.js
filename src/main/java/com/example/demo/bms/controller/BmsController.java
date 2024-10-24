@@ -10,7 +10,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -30,7 +29,7 @@ public class BmsController {
         List<BmsDTO> bmsData = bmsService.getBmsData();
         model.addAttribute("currentDate", LocalDate.now().toString());
         model.addAttribute("bmsData", bmsData);
-        return "bms_info_home"; // bms_info_home.html 템플릿을 반환
+        return "html/bms_info_home"; // bms_info_home.html 템플릿을 반환
     }
     @GetMapping("/pcs")
     public String pcsInfo() {
@@ -42,12 +41,12 @@ public class BmsController {
         List<SysDTO> sysData = sysService.getSysData();
         model.addAttribute("currentDate", LocalDate.now().toString());
         model.addAttribute("sysData", sysData);
-        return "system_info_page"; // 타임리프 템플릿 (system_info_page.html)
+        return "html/bms/system_info_page"; // 타임리프 템플릿 (system_info_page.html)
     }
 
     @GetMapping("/event")
     public String eventLog(Model model) {
         model.addAttribute("currentDate", LocalDate.now().toString());
-        return "event_log_page"; // 타임리프 템플릿 (event_log_page.html)
+        return "html/event_log_page"; // 타임리프 템플릿 (event_log_page.html)
     }
 }
