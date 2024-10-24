@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BMS 계측 정보</title>
+    <link rel="stylesheet" href="../static/css/energuard.css" th:href="@{/css/energuard.css}">
+</head>
+<body>
+<div class="container">
+    <aside class="sidebar">
+        <ul>
+            <li class="active"><a th:href="@{/bms/rack}">BMS 계측 정보</a></li>
+            <li><a th:href="@{/bms/pcs}">PCS 계측 정보</a></li>
+            <li><a th:href="@{/bms/system}">시스템 정보</a></li>
+            <li><a th:href="@{/bms/event}">이벤트 발생 내역</a></li>
+        </ul>
+    </aside>
+    <main class="content">
+        <div class="content-header">
+            <h2>RACK BMS</h2>
+        </div>
+        <div class="data-section">
+            <div th:if="${#lists.isEmpty(bmsData)}">
+                <h3>데이터가 없습니다.</h3>
+            </div>
+            <table th:if="${!#lists.isEmpty(bmsData)}">
+                <thead>
+                <tr>
+                    <th>번호</th>
+                    <th>수신 시간</th>
+                    <th>전압[V]</th>
+                    <th>전류[A]</th>
+                    <th>SOC[%]</th>
+                    <th>평균온도[°C]</th>
+                    <th>평균전압[V]</th>
+                    <th>최고전압[V]</th>
+                    <th>최저전압[V]</th>
+                    <th>알람</th>
+                    <th>상태정보</th>
+                    <th>상세정보</th>
+                    <th>트레이정보</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="item, stat : ${bmsData}">
+                    <td th:text="${stat.index + 1}"></td>
+                    <td th:text="${item.date}"></td>
+                    <td th:text="${item.voltage}"></td>
+                    <td th:text="${item.current}"></td>
+                    <td th:text="${item.soc}"></td>
+                    <td th:text="${item.temperature}"></td>
+                    <td th:text="${item.averageVoltage}"></td>
+                    <td th:text="${item.maxVoltage}"></td>
+                    <td th:text="${item.minVoltage}"></td>
+                    <td><span th:class="${item.alarm} ? 'alarm-indicator green' : 'alarm-indicator red'"></span></td>
+                    <td th:text="${item.state}"></td>
+                    <td>
+                        <button class="detail-button">보기</button>
+                    </td>
+                    <td>
+                        <button class="trace-button"> <!-- th:onclick="|openTray(${stat.index + 1}, '${item.date}')|"-->
+                            보기
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </main>
+
+</div>
+</body>
+<div th:insert="fragments/footer :: footer"></div>
+
+
+</html>

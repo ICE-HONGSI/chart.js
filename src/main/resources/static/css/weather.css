@@ -1,0 +1,28 @@
+/* 각 row에 대한 간격을 조정합니다. */
+.row {
+    margin-right: -15px; /* 부트스트랩 row의 음수 마진을 재조정합니다. */
+    margin-left: -15px; /* 부트스트랩 row의 음수 마진을 재조정합니다. */
+}
+
+/* 각 컬럼의 패딩을 조정하여 간격을 동일하게 만듭니다. */
+.row, .row > [class*='col-'] {
+    padding-right: 5px; /* 컬럼 오른쪽 패딩을 줄입니다. */
+    padding-left: 5px; /* 컬럼 왼쪽 패딩을 줄입니다. */
+}
+
+/* 부트스트랩 그리드 간격을 조정할 수 있는 클래스 추가 */
+.gap {
+    gap: 15px; /* grid-gap 속성으로 열 사이의 간격을 조정합니다. */
+}
+.weather-card {
+    display: none;
+    text-align: center;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #f7f9fc;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-top: 20px;
+}
+.weather-icon {
+    font-size: 48px;
+}

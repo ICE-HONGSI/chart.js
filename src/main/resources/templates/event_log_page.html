@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>이벤트 발생 내역</title>
+    <link rel="stylesheet" href="../static/css/energuard.css" th:href="@{/css/energuard.css}">
+</head>
+<body>
+<div class="container">
+  <aside class="sidebar">
+    <ul>
+        <li><a th:href="@{/bms/rack}">BMS 계측 정보</a></li>
+        <li><a th:href="@{/bms/pcs}">PCS 계측 정보</a></li>
+        <li><a th:href="@{/bms/system}">시스템 정보</a></li>
+        <li class="active"><a th:href="@{/bms/event}">이벤트 발생 내역</a></li>
+    </ul>
+  </aside>
+  <main class="content">
+    <div class="content-header">
+      <h2>이벤트 발생 내역</h2>
+    </div>
+    <div class="filter-section">
+      <label for="start-date">조회기간</label>
+      <input type="date" id="start-date">
+      <span>부터</span>
+      <input type="date" id="end-date">
+      <span>까지</span>
+      <button class="search-button">조회</button>
+      <button class="export-button">Excel 저장</button>
+    </div>
+    <div class="data-section">
+      <table>
+        <thead>
+        <tr>
+          <th>No.</th>
+          <th>발생 일시</th>
+          <th>설비명</th>
+          <th>제어내용</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- 데이터가 없을 경우 -->
+        <tr>
+          <td colspan="4">데이터가 없습니다.</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </main>
+
+</div>
+</body>
+<div th:insert="fragments/footer :: footer"></div>
+
+
+</html>

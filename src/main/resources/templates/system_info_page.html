@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>시스템 정보</title>
+    <link rel="stylesheet" href="../static/css/energuard.css" th:href="@{/css/energuard.css}">
+</head>
+<body>
+<div class="container">
+    <aside class="sidebar">
+        <ul>
+            <li><a th:href="@{/bms/rack}">BMS 계측 정보</a></li>
+            <li><a th:href="@{/bms/pcs}">PCS 계측 정보</a></li>
+            <li class="active"><a th:href="@{/bms/system}">시스템 정보</a></li>
+            <li><a th:href="@{/bms/event}">이벤트 발생 내역</a></li>
+        </ul>
+    </aside>
+    <main class="content">
+        <div class="content-header">
+            <h2>시스템 정보</h2>
+        </div>
+        <div class="data-section">
+            <div th:if="${#lists.isEmpty(sysData)}">
+                <h3>데이터가 없습니다.</h3>
+            </div>
+            <table th:if="${!#lists.isEmpty(sysData)}">
+                <thead>
+                <tr>
+                    <th>BMS</th>
+                    <th>IP 주소</th>
+                    <th>PCS</th>
+                    <th>IP 주소</th>
+                    <th>EMU</th>
+                    <th>IP 주소</th>
+                    <th>DPM</th>
+                    <th>IP 주소</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="item : ${sysData}">
+                    <td th:text="${item.bms}"></td>
+                    <td th:text="${item.bmsIp}"></td>
+                    <td th:text="${item.pcs}"></td>
+                    <td th:text="${item.pcsIp}"></td>
+                    <td th:text="${item.emu}"></td>
+                    <td th:text="${item.emuIp}"></td>
+                    <td th:text="${item.dpm}"></td>
+                    <td th:text="${item.dpmIp}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+
+    </main>
+</div>
+</body>
+<div th:insert="fragments/footer :: footer"></div>
+</html>
