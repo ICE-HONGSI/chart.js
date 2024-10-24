@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="bmsDetailModal (item)">
+    <!-- Modal for BMS Detail -->
+    <div id="bmsDetailModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2 th:text="'RACK NO.' + ${item.rackNumber}"></h2>
+            <div class="details-section">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>항목</th>
+                        <th>값</th>
+                        <th>항목</th>
+                        <th>값</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>전압(V)</td>
+                        <td th:text="${item.voltage}"></td>
+                        <td>전류(A)</td>
+                        <td th:text="${item.current}"></td>
+                    </tr>
+                    <tr>
+                        <td>SOC(%)</td>
+                        <td th:text="${item.soc}"></td>
+                        <td>평균온도(°C)</td>
+                        <td th:text="${item.temperature}"></td>
+                    </tr>
+                    <tr>
+                        <td>평균전압(V)</td>
+                        <td th:text="${item.averageVoltage}"></td>
+                        <td>최고전압(V)</td>
+                        <td th:text="${item.maxVoltage}"></td>
+                    </tr>
+                    <tr>
+                        <td>최저전압(V)</td>
+                        <td th:text="${item.minVoltage}"></td>
+                        <td>상태</td>
+                        <td th:text="${item.state}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="oper-section">
+                    <table>
+<!--                        <tbody>-->
+<!--                        <tr>-->
+<!--                            <th rowspan="2">OPER</th>-->
+<!--                            <td>MAIN+S/W</td>-->
+<!--                            <td th:text="${item.mainSwitch}"></td>-->
+<!--                            <td>Batt Fault</td>-->
+<!--                            <td>Batt Status</td>-->
+<!--                            <td th:text="${item.battStatus}"></td>-->
+<!--                        </tr>-->
+<!--                        <tr>-->
+<!--                            <td>MAIN- S/W</td>-->
+<!--                            <td th:text="${item.mainSwitchMinus}"></td>-->
+<!--                            <td>Batt Prot Fault</td>-->
+<!--                            <td colspan="2">Batt Status</td>-->
+<!--                        </tr>-->
+<!--                        <tr>-->
+<!--                            <th rowspan="3">WARN</th>-->
+<!--                            <td>Cell OV</td>-->
+<!--                            <td th:text="${item.cellOV}"></td>-->
+<!--                            <td>Cell OT</td>-->
+<!--                            <td th:text="${item.cellOT}"></td>-->
+<!--                            <td>Batt OV</td>-->
+<!--                            <td th:text="${item.battOV}"></td>-->
+<!--                        </tr>-->
+<!--                        <tr>-->
+<!--                            <td>Cell UV</td>-->
+<!--                            <td th:text="${item.cellUV}"></td>-->
+<!--                            <td>Cell UT</td>-->
+<!--                            <td th:text="${item.cellUT}"></td>-->
+<!--                            <td>Batt UV</td>-->
+<!--                            <td th:text="${item.battUV}"></td>-->
+<!--                        </tr>-->
+<!--                        <tr>-->
+<!--                            <td>Cell DEV</td>-->
+<!--                            <td th:text="${item.cellDEV}"></td>-->
+<!--                            <td colspan="3">Temp DEV</td>-->
+<!--                        </tr>-->
+<!--                        <tr>-->
+<!--                            <th rowspan="3">FAULT</th>-->
+<!--                            <td>Cell OV</td>-->
+<!--                            <td th:text="${item.cellOV}"></td>-->
+<!--                            <td>Cell OT</td>-->
+<!--                            <td th:text="${item.cellOT}"></td>-->
+<!--                            <td>Batt OV</td>-->
+<!--                            <td th:text="${item.battOV}"></td>-->
+<!--                        </tr>-->
+<!--                        <tr>-->
+<!--                            <td>Cell UV</td>-->
+<!--                            <td th:text="${item.cellUV}"></td>-->
+<!--                            <td>Cell UT</td>-->
+<!--                            <td th:text="${item.cellUT}"></td>-->
+<!--                            <td>Batt UV</td>-->
+<!--                            <td th:text="${item.battUV}"></td>-->
+<!--                        </tr>-->
+<!--                        <tr>-->
+<!--                            <td>Cell DEV</td>-->
+<!--                            <td th:text="${item.cellDEV}"></td>-->
+<!--                            <td colspan="3">Temp DEV</td>-->
+<!--                        </tr>-->
+<!--                        </tbody>-->
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

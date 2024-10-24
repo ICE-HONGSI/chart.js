@@ -56,23 +56,97 @@
                     <td><span th:class="${item.alarm} ? 'alarm-indicator green' : 'alarm-indicator red'"></span></td>
                     <td th:text="${item.state}"></td>
                     <td>
-                        <button class="detail-button">보기</button>
+                        <button class="detail-button" onclick="openModal()">보기</button>
                     </td>
                     <td>
-                        <button class="trace-button"> <!-- th:onclick="|openTray(${stat.index + 1}, '${item.date}')|"-->
-                            보기
-                        </button>
+                        <button class="trace-button">보기</button>
                     </td>
                 </tr>
                 </tbody>
             </table>
         </div>
-
     </main>
-
 </div>
+
+<!-- 모달 창 -->
+<div id="bmsDetailModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2 id="modalRackNumber">RACK NO.</h2>
+        <div class="details-section">
+            <table>
+                <thead>
+                <tr>
+                    <th>항목</th>
+                    <th>값</th>
+                    <th>항목</th>
+                    <th>값</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>전압(V)</td>
+<!--                    <td id="modalVoltage"></td>-->
+<!--                    <td>전류(A)</td>-->
+<!--                    <td id="modalCurrent"></td>-->
+<!--                </tr>-->
+<!--                <tr>-->
+<!--                    <td>SOC(%)</td>-->
+<!--                    <td id="modalSoc"></td>-->
+<!--                    <td>평균온도(°C)</td>-->
+<!--                    <td id="modalTemperature"></td>-->
+<!--                </tr>-->
+<!--                <tr>-->
+<!--                    <td>평균전압(V)</td>-->
+<!--                    <td id="modalAverageVoltage"></td>-->
+<!--                    <td>최고전압(V)</td>-->
+<!--                    <td id="modalMaxVoltage"></td>-->
+<!--                </tr>-->
+<!--                <tr>-->
+<!--                    <td>최저전압(V)</td>-->
+<!--                    <td id="modalMinVoltage"></td>-->
+<!--                    <td>상태</td>-->
+<!--                    <td id="modalState"></td>-->
+<!--                </tr>-->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Include Footer Fragment -->
+<div th:insert="~{fragments/footer :: footer}"></div>
+
+
+<script th:inline="javascript">
+    // 모달 열기
+    function openModal() {
+        console.log("Modal Open Called with index: ");  // 함수 호출 여부 확인
+        const modal = document.getElementById("bmsDetailModal");
+        // const item = bmsData[index];
+        // if (item) {
+        //     document.getElementById("modalRackNumber").textContent = 'RACK NO. ' + (index + 1);
+        //     document.getElementById("modalVoltage").textContent = item.voltage;
+        //     document.getElementById("modalCurrent").textContent = item.current;
+        //     document.getElementById("modalSoc").textContent = item.soc;
+        //     document.getElementById("modalTemperature").textContent = item.temperature;
+        //     document.getElementById("modalAverageVoltage").textContent = item.averageVoltage;
+        //     document.getElementById("modalMaxVoltage").textContent = item.maxVoltage;
+        //     document.getElementById("modalMinVoltage").textContent = item.minVoltage;
+        //     document.getElementById("modalState").textContent = item.state;
+        //     modal.style.display = "block";
+        // } else {
+        //     console.error("Item not found for index: " + index);
+        // }
+        modal.style.display = "block";
+    }
+
+
+    // 모달 닫기
+    function closeModal() {
+        document.getElementById("bmsDetailModal").style.display = "none";
+    }
+</script>
+
 </body>
-<div th:insert="fragments/footer :: footer"></div>
-
-
 </html>
