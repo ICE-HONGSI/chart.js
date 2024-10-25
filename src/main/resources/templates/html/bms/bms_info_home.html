@@ -44,7 +44,7 @@
                 </thead>
                 <tbody>
                 <tr th:each="item, stat : ${bmsData}">
-                    <td th:text="${stat.index + 1}"></td>
+                    <td th:text="${item.id}"></td>
                     <td th:text="${item.date}"></td>
                     <td th:text="${item.voltage}"></td>
                     <td th:text="${item.current}"></td>
@@ -56,10 +56,10 @@
                     <td><span th:class="${item.alarm} ? 'alarm-indicator green' : 'alarm-indicator red'"></span></td>
                     <td th:text="${item.state}"></td>
                     <td>
-                        <button class="detail-button" onclick="openModal()">보기</button>
+                        <button class="detail-button" th:onclick="|openModal(${item.id})|">보기</button>
                     </td>
                     <td>
-                        <button class="trace-button">보기</button>
+                        <button class="trace-button" th:onclick="|viewTrace()|">보기</button>
                     </td>
                 </tr>
                 </tbody>
@@ -67,12 +67,10 @@
         </div>
     </main>
 </div>
-
-<!-- 모달 창 -->
 <div id="bmsDetailModal" class="modal" style="display: none;">
     <div class="modal-content">
         <span class="close" onclick="closeModal()">&times;</span>
-        <h2 id="modalRackNumber">RACK NO.</h2>
+        <h2 id="modalRackNumber" class="modal-header">RACK NO.</h2>
         <div class="details-section">
             <table>
                 <thead>
@@ -86,30 +84,126 @@
                 <tbody>
                 <tr>
                     <td>전압(V)</td>
-<!--                    <td id="modalVoltage"></td>-->
-<!--                    <td>전류(A)</td>-->
-<!--                    <td id="modalCurrent"></td>-->
-<!--                </tr>-->
-<!--                <tr>-->
-<!--                    <td>SOC(%)</td>-->
-<!--                    <td id="modalSoc"></td>-->
-<!--                    <td>평균온도(°C)</td>-->
-<!--                    <td id="modalTemperature"></td>-->
-<!--                </tr>-->
-<!--                <tr>-->
-<!--                    <td>평균전압(V)</td>-->
-<!--                    <td id="modalAverageVoltage"></td>-->
-<!--                    <td>최고전압(V)</td>-->
-<!--                    <td id="modalMaxVoltage"></td>-->
-<!--                </tr>-->
-<!--                <tr>-->
-<!--                    <td>최저전압(V)</td>-->
-<!--                    <td id="modalMinVoltage"></td>-->
-<!--                    <td>상태</td>-->
-<!--                    <td id="modalState"></td>-->
-<!--                </tr>-->
+                    <td id="modalVoltage" class="value-column"></td>
+                    <td>전류(A)</td>
+                    <td id="modalCurrent" class="value-column"></td>
+                </tr>
+                <tr>
+                    <td>SOC(%)</td>
+                    <td id="modalSoc" class="value-column"></td>
+                    <td>평균온도(°C)</td>
+                    <td id="modalTemperature" class="value-column"></td>
+                </tr>
+                <tr>
+                    <td>평균전압(V)</td>
+                    <td id="modalAverageVoltage" class="value-column"></td>
+                    <td>최고전압(V)</td>
+                    <td id="modalMaxVoltage" class="value-column"></td>
+                </tr>
+                <tr>
+                    <td>최저전압(V)</td>
+                    <td id="modalMinVoltage" class="value-column"></td>
+                    <td>상태</td>
+                    <td id="modalState" class="value-column"></td>
+                </tr>
                 </tbody>
             </table>
+        </div>
+        <!-- 추가 정보 영역 (OPER, WARN, FAULT) -->
+        <div class="additional-info">
+            <table class="operPCSSubtable">
+                <tbody>
+                <!-- OPER Section -->
+                <tr>
+                    <th class="bms_left_title bottom_border" rowspan="2"><span>OPER</span></th>
+                    <td><span>MAIN+S/W</span><span style="padding-left: 15px; padding-right: 15px;" id="emp_info_1-1" readonly="">ON</span></td>
+                    <td><span>Batt Fault</span></td>
+                    <td colspan="3"><span>Batt Status</span><span id="emp_info_1-3" readonly="">StandBy</span></td>
+                </tr>
+                <tr class="bottom_border">
+                    <td><span>MAIN- S/W</span><span style="padding-left: 15px; padding-right: 15px;" id="emp_info_1-4" readonly="">ON</span></td>
+                    <td colspan="4"><span>Batt Prot Fault</span></td>
+                </tr>
+
+                <!-- WARN Section -->
+                <tr>
+                    <th class="bms_left_title bottom_border" rowspan="3"><span>WARN</span></th>
+                    <td><span>Cell OV</span></td>
+                    <td><span>Cell OT</span></td>
+                    <td><span>Batt OV</span></td>
+                    <td><span>Batt OCC</span></td>
+                </tr>
+                <tr>
+                    <td><span>Cell UV</span></td>
+                    <td><span>Cell UT</span></td>
+                    <td><span>Batt UV</span></td>
+                    <td><span>Batt ODC</span></td>
+                </tr>
+                <tr class="bottom_border">
+                    <td><span>Cell DEV</span></td>
+                    <td colspan="3"><span>Temp DEV</span></td>
+                </tr>
+
+                <!-- FAULT Section -->
+                <tr>
+                    <th class="bms_left_title bottom_border" rowspan="3"><span>FAULT</span></th>
+                    <td><span>Cell OV</span></td>
+                    <td><span>Cell OT</span></td>
+                    <td><span>Batt OV</span></td>
+                    <td><span>Batt OCC</span></td>
+                </tr>
+                <tr>
+                    <td><span>Cell UV</span></td>
+                    <td><span>Cell UT</span></td>
+                    <td><span>Batt UV</span></td>
+                    <td><span>Batt ODC</span></td>
+                </tr>
+                <tr class="bottom_border">
+                    <td><span>Cell DEV</span></td>
+                    <td colspan="3"><span>Temp DEV</span></td>
+                </tr>
+                </tbody>
+            </table>
+
+        </div>
+
+        <!-- Footer Section -->
+        <div class="modal-footer">
+            <span id="currentDate"></span> <!-- 날짜를 출력할 곳 -->
+        </div>
+    </div>
+    <!-- Modal structure -->
+
+</div>
+<div id="trayModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2 id="modalRackNumber" class="modal-header">RACK NO.1</h2>
+
+
+        <!-- Tray buttons grid -->
+        <div class="tray-grid">
+            <button class="tray-button active" onclick="selectTray(1)">TRAY 1</button>
+            <button class="tray-button" onclick="selectTray(2)">TRAY 02</button>
+            <button class="tray-button" onclick="selectTray(3)">TRAY 03</button>
+            <button class="tray-button" onclick="selectTray(4)">TRAY 04</button>
+            <button class="tray-button" onclick="selectTray(5)">TRAY 05</button>
+            <button class="tray-button" onclick="selectTray(6)">TRAY 06</button>
+            <button class="tray-button" onclick="selectTray(7)">TRAY 07</button>
+            <button class="tray-button" onclick="selectTray(8)">TRAY 08</button>
+            <button class="tray-button" onclick="selectTray(9)">TRAY 09</button>
+            <button class="tray-button" onclick="selectTray(10)">TRAY 10</button>
+            <button class="tray-button" onclick="selectTray(11)">TRAY 11</button>
+            <button class="tray-button" onclick="selectTray(12)">TRAY 12</button>
+            <button class="tray-button" onclick="selectTray(13)">TRAY 13</button>
+            <button class="tray-button" onclick="selectTray(14)">TRAY 14</button>
+            <button class="tray-button" onclick="selectTray(15)">TRAY 15</button>
+        </div>
+
+        <!-- Chart information area -->
+        <div class="chart-area">
+            <p id="chartTitle">Chart for Tray 1</p>
+            <p id="stats">최대: 0, 최소: 0, 표준편차: 0</p>
         </div>
     </div>
 </div>
@@ -117,34 +211,66 @@
 <!-- Include Footer Fragment -->
 <div th:insert="~{fragments/footer :: footer}"></div>
 
+<script>
+    // 모달 열기 및 데이터 가져오기
+    function openModal(rackId) {
+        fetch(`/api/bms/rack/${rackId}`)  // REST API 호출
+            .then(response => response.json())
+            .then(data => {
+                // 데이터를 받아와서 모달에 채우기
+                document.getElementById('modalRackNumber').innerText = 'RACK NO. ' + data.id;
+                document.getElementById('modalVoltage').innerText = data.voltage;
+                document.getElementById('modalCurrent').innerText = data.current;
+                document.getElementById('modalSoc').innerText = data.soc;
+                document.getElementById('modalTemperature').innerText = data.temperature;
+                document.getElementById('modalAverageVoltage').innerText = data.averageVoltage;
+                document.getElementById('modalMaxVoltage').innerText = data.maxVoltage;
+                document.getElementById('modalMinVoltage').innerText = data.minVoltage;
+                document.getElementById('modalState').innerText = data.state;
 
-<script th:inline="javascript">
-    // 모달 열기
-    function openModal() {
-        console.log("Modal Open Called with index: ");  // 함수 호출 여부 확인
-        const modal = document.getElementById("bmsDetailModal");
-        // const item = bmsData[index];
-        // if (item) {
-        //     document.getElementById("modalRackNumber").textContent = 'RACK NO. ' + (index + 1);
-        //     document.getElementById("modalVoltage").textContent = item.voltage;
-        //     document.getElementById("modalCurrent").textContent = item.current;
-        //     document.getElementById("modalSoc").textContent = item.soc;
-        //     document.getElementById("modalTemperature").textContent = item.temperature;
-        //     document.getElementById("modalAverageVoltage").textContent = item.averageVoltage;
-        //     document.getElementById("modalMaxVoltage").textContent = item.maxVoltage;
-        //     document.getElementById("modalMinVoltage").textContent = item.minVoltage;
-        //     document.getElementById("modalState").textContent = item.state;
-        //     modal.style.display = "block";
-        // } else {
-        //     console.error("Item not found for index: " + index);
-        // }
-        modal.style.display = "block";
+                const currentDate = new Date().toLocaleDateString('ko-KR', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    weekday: 'long'
+                });
+                document.getElementById('currentDate').innerText = currentDate;
+
+                // 모달 보이기
+                document.getElementById('bmsDetailModal').style.display = 'block';
+            })
+            .catch(error => {
+                console.error('Error fetching BMS data:', error);
+            });
     }
-
 
     // 모달 닫기
     function closeModal() {
-        document.getElementById("bmsDetailModal").style.display = "none";
+        document.getElementById('bmsDetailModal').style.display = 'none';
+        document.getElementById('trayModal').style.display = 'none';
+    }
+    function viewTrace() {
+        document.getElementById('trayModal').style.display = 'flex';
+    }
+
+    // Function to close the trace modal
+    function closeTraceModal() {
+        document.getElementById('trayModal').style.display = 'none';
+    }
+    function selectTray(trayNumber) {
+        // Deselect all buttons
+        let buttons = document.getElementsByClassName('tray-button');
+        for (let i = 0; i < buttons.length; i++) {
+            buttons[i].classList.remove('active');
+        }
+
+        // Select the clicked button
+        document.querySelector(`.tray-button:nth-child(${trayNumber})`).classList.add('active');
+
+        // Update the chart area based on selected tray
+        document.getElementById('chartTitle').innerText = `Chart for Tray ${trayNumber}`;
+        // Here you could update stats dynamically if needed
+        document.getElementById('stats').innerText = `최대: 0, 최소: 0, 표준편차: 0`;
     }
 </script>
 
