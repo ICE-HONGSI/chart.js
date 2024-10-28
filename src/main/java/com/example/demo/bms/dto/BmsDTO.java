@@ -21,7 +21,6 @@ public class BmsDTO {
     private String state;
     private String detailInfo;
     private String tracingInfo;
-
     // Constructor to convert from Entity to DTO
     public BmsDTO(Bms bms) {
         this.id = bms.getId();

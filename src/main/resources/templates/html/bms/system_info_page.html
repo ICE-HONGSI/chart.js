@@ -6,6 +6,9 @@
     <title>시스템 정보</title>
     <link rel="stylesheet" href="../../../static/css/energuard.css" th:href="@{/css/energuard.css}">
 </head>
+
+<header th:insert="~{fragments/header :: header}"></header>
+
 <body>
 <div class="container">
     <aside class="sidebar">
@@ -56,5 +59,5 @@
     </main>
 </div>
 </body>
-<div th:insert="~{fragments/footer :: footer}"></div>
+<footer th:insert="~{fragments/footer :: footer}"></footer>
 </html>

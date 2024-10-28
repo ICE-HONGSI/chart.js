@@ -480,3 +480,68 @@ table {
 .chart-area p {
   margin: 5px 0;
 }
+
+
+header {
+  background-color: #23272a;
+  color: white;
+  padding: 10px 20px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.weather-info {
+  display: flex;
+  align-items: center;
+}
+
+.weather-info img {
+  height: 50px;
+  width: auto;
+  margin-right: 10px;
+}
+
+.left-image img {
+  width: 200px;
+  height: auto;
+}
+
+.temperature-structure {
+  display: flex;
+  align-items: center;
+  margin-left: 15%;
+}
+
+.temperature {
+  font-size: 24px;
+  margin-right: 10px;
+}
+
+.precipitation img {
+  height: 50px;
+  width: 50px;
+}
+
+.menu {
+  display: flex;
+  align-items: center;
+  margin-right: 5%;
+  font-size: 20px;
+}
+
+.menu a {
+  color: white;
+  text-decoration: none;
+  padding: 10px 15px;
+  transition: color 0.3s;
+}
+
+.menu a.active {
+  color: #55e0ae;
+}
+
+.menu a:hover {
+  color: #55e0ae;
+}
