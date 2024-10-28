@@ -1,0 +1,829 @@
+<html><head><script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
+  <title>ENERGUARD SYSTEM</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8">
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
+  <script src="./js/top.js"></script>
+<!--  <link rel="stylesheet" type="text/css" href="./css/top.css">-->
+  <link rel="stylesheet" type="text/css" href="./css/main.css">
+<!--  <link rel="stylesheet" type="text/css" href="./css/oper.css">-->
+<!--  <link rel="stylesheet" type="text/css" href="./css/trend.css">-->
+<!--  <link rel="stylesheet" type="text/css" href="./css/report.css">-->
+<!--  <link rel="stylesheet" type="text/css" href="./css/control.css">-->
+  <link rel="stylesheet" type="text/css" href="./css/energuard.css" th:href="@{/css/energuard.css}">
+  <link rel="stylesheet" type="text/css" href="./css/footer.css">
+  <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+
+  <script>
+
+    console.log("Ver. 241028. \nby WALAB 2024-2 Capstone Project");
+
+    var setCookie = function(name, value) {
+      var date = new Date();
+      date.setTime(date.getTime() + 1000 * 10 * 60); //cookie 10분 지속
+      document.cookie = name + '=' + value + ';expires=' + date.toUTCString() + ';path=/';
+    };
+
+    var getCookie = function(name) {
+      var value = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
+      return value? value[2] : null;
+    };
+
+    const appKey = "8d4de91e1577d6361f6d18064dc6e96b";
+    var weather_name;
+    var temperature;
+    var img;
+    var d = new Date();
+
+    function change_weather(icon, temp) {
+      var status;
+      img.src = "./img/top/";
+
+      switch (icon) {
+              /*맑음*/
+        case "01d":
+        case "01n":
+        case "03n":
+        case "03d":
+          img.src += "clear.png";
+          status = "맑음";
+          break;
+
+              /* 구름 조금  */
+        case "02d":
+        case "02n":
+        case "04d":
+        case "04n":
+          img.src += "little_cloud.png";
+          status = "조금흐림";
+          break;
+
+              /*구름 많이*/
+        case "50d":
+        case "50n":
+          img.src += "cloudy.png";
+          status = "흐림";
+          break;
+
+              /*비*/
+        case "09d":
+        case "09n":
+        case "10d":
+        case "10n":
+        case "11d":
+        case "11n":
+          img.src += "rain.png";
+          status = "비";
+          break;
+
+              /*눈*/
+        case "13d":
+        case "13n":
+          img.src += "snow.png";
+          status = "눈";
+          break;
+      }
+
+      weather_name.innerHTML = status;
+      temperature.innerHTML = temp  + "˚C";
+
+      var time = String(d);
+      var month = String(d.getFullYear()) + String(d.getMonth() + 1);
+      var day = d.getDate();
+      $('.time').val(time);
+      $('.month').val(month);
+      $('.date').val(date);
+      $('.status').val(status);
+      $('.reason').val(reason);
+
+      $.ajax({
+        type : "POST",
+        url : "weatherRecord",
+        data : $('form').serialize(),
+        error : function(error) {
+          console.log("error");
+        },
+        success : function(data) {
+
+        }
+      });
+
+
+    }
+
+    $(document).ready(function () {
+      img = document.getElementById("weather");
+      weather_name = document.getElementById("weather_name");
+      temperature = document.getElementById("temp");
+
+      check_time();
+      setInterval(check_time, 1 * 1000 * 60 * 5); //5분마다 실행
+
+    });
+
+    function check_time() {
+
+      /* 데이터가 없거나 현재시간 - 마지막call시간 >=5 */
+      if(getCookie("icon") == null)
+      {
+        setCookie("pre_time", d.getHours()*60 + d.getMinutes());
+        setCookie("pre_date", d.getDate());
+        reason="0";
+        findWeatherDetails();
+      }
+      else if(d.getHours()*60 + d.getMinutes() - getCookie("pre_time") >= 5 || d.getDate() != getCookie("pre_date"))
+      {
+        setCookie("pre_time", d.getHours()*60 + d.getMinutes());
+        setCookie("pre_date", d.getDate());
+        reason="1";
+        findWeatherDetails();
+      }
+      else
+      {
+        reason="2";
+        change_weather(getCookie("icon"), getCookie("temp"));
+      }
+
+    }
+
+    //2nd
+    function findWeatherDetails() {
+      var region = "lat=" + "36.1" + "&lon=" + "130.3";
+      var searchLink = "https://api.openweathermap.org/data/2.5/weather?" + region + "&appid=" + appKey;
+
+      httpRequestAsync(searchLink, theResponse);
+    }
+
+    function theResponse(response) {
+      var jsonObject = JSON.parse(response);
+      setCookie("icon", jsonObject.weather[0].icon);
+      setCookie("temp", (jsonObject.main.temp-273).toFixed(0));
+
+      change_weather(jsonObject.weather[0].icon, (parseInt(jsonObject.main.temp - 273)).toFixed(0));
+    }
+
+
+    //3rd
+    function httpRequestAsync(url, callback) {
+      var d = new Date();
+      var httpRequest = new XMLHttpRequest();
+      httpRequest.onreadystatechange = () =>
+      {
+        if (httpRequest.readyState == 4 && httpRequest.status == 200)
+          callback(httpRequest.responseText);
+      }
+      httpRequest.open("GET", url, true); // true for asynchronous
+      httpRequest.send();
+    }
+  </script>
+</head>
+
+<body class="backGround">
+<div th:insert="~{fragments/header :: headerFragment}"></div>
+<!--<div class="topMenu">-->
+<!--  <div class="logo">-->
+<!--    <div class="logo_image">-->
+<!--      <img src="./img/top/energuard.png" id="logo" style="cursor:pointer" onclick="locationRedir(&quot;main&quot;)">-->
+<!--    </div>-->
+
+
+<!--    <div class="logo_name">-->
+<!--						<span id="compName">-->
+<!--							발전소&nbsp;&nbsp;</span>-->
+<!--    </div>-->
+
+
+
+
+<!--    <div class="logo_weather">-->
+<!--      <img src="http://localhost:8080/pms/img/top/rain.png" id="weather">-->
+<!--      <div class="map_wrap">-->
+<!--        <div id="map"></div>-->
+<!--        <div class="hAddr">-->
+<!--          <span>&nbsp;</span><span id="centerAddr"></span>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--      <div class="weather_name">-->
+<!--        <span>&nbsp;</span><span id="weather_name">비</span><span id="temp">29˚C</span>-->
+<!--      </div>-->
+<!--    </div>-->
+
+<!--  </div>-->
+
+
+<!--  <div class="menu">-->
+<!--    <ul>-->
+<!--      <li id="setting" class="unselected" style="margin-left: -15px;"><a href="setting">설정</a></li>-->
+<!--      <li id="control" class="unselected" style="margin-left: -15px;"><a href="control">제어</a></li>-->
+<!--      <li id="oper" class="unselected" style="margin-left: -2px;"><a href="oper">운영</a></li>-->
+<!--      <li id="report" class="unselected"><a href="report">리포트</a></li>-->
+<!--      <li id="trend" class="unselected" style="margin-left: 1px;"><a href="trend">트렌드</a></li>-->
+<!--      <li id="main" class="selected"><a href="main">메인</a></li>-->
+<!--    </ul>-->
+<!--  </div>-->
+<!--</div>-->
+<!--<form>-->
+<!--  <input id="time" class="time" name="time" type="hidden" value="Wed Apr 03 2024 11:29:27 GMT+0900 (Korean Standard Time)"> <input id="month" class="month" name="month" type="hidden" value="20244"> <input id="date" class="date" name="date" type="hidden" value="03"> <input id="reason" class="reason" name="reason" type="hidden" value="0"> <input id="status" class="status" name="status" type="hidden" value="비">-->
+<!--</form>-->
+
+
+<!--<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=2e4d3db9202a876bae8b4b4ab3c7e0b8&amp;libraries=services"></script>-->
+<!--<script>-->
+<!--  var mapContainer = document.getElementById('map'), // 지도를 표시할 div-->
+<!--          mapOption = {-->
+<!--            center: new kakao.maps.LatLng("36", "130"), // 지도의 중심좌표-->
+<!--            level: 1-->
+<!--          };-->
+
+<!--  var map = new kakao.maps.Map(mapContainer, mapOption);-->
+<!--  var geocoder = new kakao.maps.services.Geocoder();-->
+
+<!--  searchAddrFromCoords(map.getCenter(), displayCenterInfo);-->
+
+<!--  function searchAddrFromCoords(coords, callback) {-->
+<!--    geocoder.coord2RegionCode(coords.getLng(), coords.getLat(),-->
+<!--            callback);-->
+<!--  }-->
+
+<!--  /* city,do name + gu name*/-->
+<!--  function displayCenterInfo(result, status) {-->
+<!--    if (status === kakao.maps.services.Status.OK) {-->
+<!--      var infoDiv = document.getElementById('centerAddr');-->
+<!--      for (var i = 0; i < result.length; i++) {-->
+<!--        if (result[i].region_type === 'H') {-->
+<!--          infoDiv.innerHTML = result[i].region_1depth_name + " " + result[i].region_2depth_name;-->
+<!--          break;-->
+<!--        }-->
+<!--      }-->
+<!--    }-->
+<!--  }-->
+<!--</script>-->
+<!-- Top Menu -->
+
+
+<div class="bodyWrapper">
+
+  <!-- Resources -->
+  <script src="https://www.amcharts.com/lib/4/core.js"></script>
+  <script src="https://www.amcharts.com/lib/4/charts.js"></script>
+  <script src="https://www.amcharts.com/lib/4/themes/material.js"></script>
+  <script src="https://www.amcharts.com/lib/4/themes/kelly.js"></script>
+  <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+
+
+  <div class="mainDetail">
+    <div class="mainLeft">
+      <div class="solar-info">
+        <div class="main-box-main-box-title-container">
+          <p class="main-box-title">태양광 발전 정보</p>
+        </div>
+        <div class="solar-info-content-container">
+          <img class="solar-info-img-container" src="./img/main/solar-info/solar-panel-1-c.png" alt="Solar Panel">
+          <div class="solar-info-content-detail-conatiner">
+            <p class="solar-info-subtitle">현재 발전량</p>
+            <p>
+              <span class="solar-info-value" id="solar-info-value1" th:text="${currentData.getCharge_amount()}"> </span> <span class="solar-info-unit">&nbsp;kW</span>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="ess-info">
+        <div class="main-box-main-box-title-container">
+          <p class="main-box-title">ESS 발전 정보</p>
+        </div>
+        <div class="ess-info-content-container">
+          <img class="ess-info-img-container" src="./img/main/ess-info/battery-1-c.png" id="ess-info-battery" alt="Battery">
+          <div class="ess-info-content-detail-conatiner">
+            <p class="ess-info-subtitle">현재 배터리 SOC</p>
+            <p>
+              <span class="ess-info-value" id="ess-info-value1" th:text="${currentData.getSoc()}"></span> <span class="ess-info-unit">%</span>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="run-info">
+        <div class="main-box-main-box-title-container">
+          <p class="main-box-title">운전 정보</p>
+        </div>
+        <div class="run-info-content-container">
+          <ul>
+            <li class="subLTW"><p class="subLeft run-info-content-main-box-title">설치 용량</p>
+              <p class="subRight ">
+                <span id="kw"th:text="${currentData.getTotalCap()}"></span> <span class="run-info-content-unit">&nbsp;kWh</span>
+              </p></li>
+            <hr class="dataLine">
+            <li class="subLTW"><p class="subLeft run-info-content-main-box-title">PCS 모드</p>
+              <p class="subRight" id="run-info-FirstImg">자동모드</p></li>
+            <hr class="dataLine">
+            <li class="subLTW"><p class="subLeft run-info-content-main-box-title">BMS 상태</p>
+              <p class="subRight" id="run-info-SecondImg">-</p></li>
+            <hr class="dataLine">
+            <li class="subLTW"><p class="subLeft run-info-content-main-box-title">BMS 룸 온도</p>
+              <p class="subRight">
+                <span class="run-info-content-number" id="run-info-content-number1" th:text="${currentData.getBmsTem()}"></span> <span class="run-info-content-unit">&nbsp;°C</span>
+              </p></li>
+            <hr class="dataLine">
+            <li class="subLTW"><p class="subLeft run-info-content-main-box-title">PCS 룸 온도</p>
+              <p class="subRight">
+                <span class="run-info-content-number" id="run-info-content-number2" th:text="${currentData.getPcsTem()}"></span> <span class="run-info-content-unit">&nbsp;°C</span>
+              </p></li>
+            <hr class="dataLine">
+            <li class="subLTW"><p class="subLeft run-info-content-main-box-title">BMS 룸 습도</p>
+              <p class="subRight">
+                <span class="run-info-content-number" id="run-info-content-number3" th:text="${currentData.getBmsHum()}"></span> <span class="run-info-content-unit">&nbsp;&nbsp;%</span>
+              </p></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="mainRight">
+      <div class="mainRightTop">
+        <div class="power-system">
+          <div class="main-box-main-box-title-container">
+            <p class="main-box-title" id="RunResultDT">
+              발전 계통 <span id="RunResultDT2"></span>
+            </p>
+          </div>
+          <div class="power-system-content-container">
+            <div class="power-system-content-row">
+              <div class="power-system-image-name-container" id="kepco">
+                <img src="./img/main/power-system/kepco.png" alt="">
+                <div class="power-system-name-tag">한전</div>
+              </div>
+              <div id="line1-value">
+                <p class="line-value">
+                  <span id="FigureA">0</span><span class="unit">&nbsp;kW</span>
+                </p>
+              </div>
+              <div class="power-system-image-name-container" id="solar-panel">
+                <img src="./img/main/power-system/solar-panel.png" alt="">
+                <div class="power-system-name-tag">태양광</div>
+              </div>
+              <div id="line2-value">
+                <p class="line-value">
+                  <span id="FigureB" th:text="${currentData.getPvRcv()}"></span> <span class="unit">&nbsp;kW</span>
+                </p>
+              </div>
+              <div id="line3-value">
+                <p class="line-value">
+                  <span id="FigureD" th:text="${currentData.getEssOut()}"></span> <span class="unit">&nbsp;kW</span>
+                </p>
+              </div>
+              <!-- 정렬을 위한 빈 div 1개 -->
+              <div class="power-system-image-name-container"></div>
+              <div class="power-system-image-name-container" id="battery">
+                <img src="http://localhost:8080/pms/img/main/power-system/battery1.png" id="power-system-battery" alt="">
+                <div class="ess-info-number">
+                  <div class="power-system-name-tag">배터리</div>
+                  <center>
+                    <p>
+                      <span class="ess-info-value2" id="FigureF" th:text="${(currentData.getCap() * 1.0) / currentData.getTotalCap() * 100}"></span> <span class="ess-info-unit">%</span>
+                    </p>
+                  </center>
+                </div>
+              </div>
+            </div>
+            <div class="power-system-content-row">
+              <!-- 정렬을 위한 빈 div 3개 -->
+              <div class="power-system-image-name-container"></div>
+              <div class="power-system-image-name-container"></div>
+              <div id="line4-value">
+                <p class="line-value">
+                  <span id="FigureE" th:text="${currentData.getEssRcv() + currentData.getPvRcv()}"></span><span class="unit">&nbsp;kW</span>
+                </p>
+              </div>
+              <div class="power-system-image-name-container" id="PCS">
+                <img src="./img/main/power-system/PCS.png" alt="">
+                <!-- <div id="line5-value"> -->
+                <p class="line-value">
+                  <span id="FigureC" th:text="${currentData.getKepOut()}"></span><span class="unit">&nbsp;kW</span>
+                </p>
+                <!-- </div> -->
+                <div class="power-system-name-tag">PCS</div>
+              </div>
+
+              <div class="power-system-image-name-container"></div>
+            </div>
+            <img src="./img/main/power-system/de_line1.png" id="line1" alt="">
+            <img src="./img/main/power-system/de_line2.png" id="line2" alt="">
+            <img src="./img/main/power-system/de_line3.png" id="line3" alt="">
+            <img src="./img/main/power-system/de_line4.png" id="line4" alt="">
+            <img src="./img/main/power-system/de_line5.png" id="line5" alt="">
+          </div>
+        </div>
+
+        <div class="run-result">
+          <div class="main-box-main-box-title-container">
+            <p class="main-box-title">운전 실적</p>
+          </div>
+          <div class="rigtTwoWrapper" id="rightTwoTopWrapper">
+            <h3 class="run-result-submain-box-title">당일 실적</h3>
+            <ul>
+              <li class="subRTW"><p class="subLeft">발전량</p>
+                <p class="subRight">
+                  <span class="run-result-value" id="run-result-value1"></span>&nbsp;<span id="subRight1"> kWh</span>
+                </p></li>
+              <hr class="dataLine">
+              <li class="subRTW"><p class="subLeft">충전량</p>
+                <p class="subRight">
+                  <span class="run-result-value" id="run-result-value2"></span>&nbsp;<span id="subRight2"> kWh</span>
+                </p></li>
+              <hr class="dataLine">
+              <li class="subRTW"><p class="subLeft">방전량</p>
+                <p class="subRight">
+                  <span class="run-result-value" id="run-result-value3"></span>&nbsp;<span id="subRight3"> kWh</span>
+                </p></li>
+            </ul>
+          </div>
+
+          <div class="rigtTwoWrapper">
+            <h3 class="run-result-submain-box-title">당월 실적</h3>
+            <ul>
+              <li class="subRTW"><p class="subLeft">발전량</p>
+                <p class="subRight">
+                  <span class="run-result-value" id="run-result-value4"></span>&nbsp;
+                  <span id="subRight4"> kWh</span>
+                </p></li>
+              <hr class="dataLine">
+              <li class="subRTW"><p class="subLeft">충전량</p>
+                <p class="subRight">
+                  <span class="run-result-value" id="run-result-value5"></span>&nbsp;
+                  <span id="subRight5"> kWh</span>
+                </p></li>
+              <hr class="dataLine">
+              <li class="subRTW"><p class="subLeft">방전량</p>
+                <p class="subRight">
+                  <span class="run-result-value" id="run-result-value6"></span>&nbsp;
+                  <span id="subRight6"> kWh</span>
+                </p></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="realtime-trend">
+        <div class="realtime-trend">
+          <div class="main-box-main-box-title-container">
+            <p class="main-box-title">실시간 트렌드</p>
+          </div>
+          <div class="realtime-trend-content-AxisX">충전·방전량 (kWh)</div>
+          <div style="display: inline-block" class="realtime-trend-content-container">
+            <canvas id="barChart" width="800" height="400"></canvas>
+          </div>
+          <div class="realtime-trend-content-AxisY">시간 (hr)</div>
+          <div class="subWrapper"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      $(document).ready(function() {
+        // AJAX 요청을 통해 서버에서 데이터를 가져옵니다.
+        $.ajax({
+          url: '/api/batteryData', // API 경로는 실제 서버의 경로와 일치해야 합니다.
+          type: 'GET',
+          dataType: 'json',
+          success: function(data) {
+            // 가져온 데이터를 사용하여 그래프를 생성합니다.
+            var ctx = document.getElementById('barChart').getContext('2d');
+
+            // 시간 축을 설정합니다. 00시부터 23시까지
+            var labels = [];
+            for (var i = 0; i < 24; i++) {
+              labels.push(`${i.toString().padStart(2, '0')}시`);
+            }
+
+            // 충전량과 방전량 데이터를 초기화합니다.
+            var chargeAmounts = new Array(24).fill(0);
+            var dischargeAmounts = new Array(24).fill(0);
+
+            // 데이터를 배열에 매핑합니다.
+            data.forEach(function(entry) {
+              var index = entry.hour;
+              if (index >= 0 && index < 24) {
+                chargeAmounts[index] = entry.chargeAmount;
+                dischargeAmounts[index] = entry.dischargeAmount;
+              }
+            });
+
+            var myChart = new Chart(ctx, {
+              type: 'bar',
+              data: {
+                labels: labels,
+                datasets: [{
+                  label: '방전량',
+                  data: dischargeAmounts,
+                  backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                  borderColor: 'rgba(255, 99, 132, 1)',
+                  borderWidth: 1
+                }, {
+                  label: '충전량',
+                  type: 'line', // 충전량을 꺾은선 그래프로 표시합니다.
+                  data: chargeAmounts,
+                  backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                  borderColor: 'rgba(75, 192, 192, 1)',
+                  borderWidth: 2,
+                  fill: false // 배경 채우기 없음
+                }]
+              },
+              options: {
+                scales: {
+                  y: {
+                    beginAtZero: true
+                  }
+                },
+                responsive: true,
+                maintainAspectRatio: false
+              }
+            });
+          },
+          error: function(xhr, status, error) {
+            console.error("Error occurred: " + error);
+          }
+        });
+      });
+    </script>
+
+
+    <script>
+      //-----------------------------------------------------------메인 상태표기 & 애니메이션
+      //------------------------------------단위 처리
+      var MainImgSrc = "./img/main/power-system/";
+
+      function check_unit(A, B, id, id2) {
+        if (parseInt(A - B) > 1000) {
+          document.getElementById(id).innerHTML = (parseInt(A - B) / 1000)
+                  .toFixed(1);
+          document.getElementById(id2).innerHTML = "MWh";
+        }
+
+        else {
+          document.getElementById(id).innerHTML = (parseInt(A - B).toFixed(1));
+          document.getElementById(id2).innerHTML = "kWh";
+        }
+      }
+      function check_unit2(value, id, unitId) {
+        // value가 1000 이상이면 MWh로 변환
+        if (value >= 1000) {
+          document.getElementById(id).innerHTML = (value / 1000).toFixed(1);
+          document.getElementById(unitId).innerHTML = "MWh";
+        } else {
+          document.getElementById(id).innerHTML = value.toFixed(1);
+          document.getElementById(unitId).innerHTML = "kWh";
+        }
+      }
+
+
+      //애니메이션 효과
+      function change_line(BMS_Status, R_PCSPower, R_ESSIn, R_ESSOut, R_PVOut,
+                           R_SOC) {
+
+        /* <!-- Button image Change as BMS_Status--> */
+        var runInfoSecImgStyle = document.getElementById("run-info-SecondImg").style;
+        var runInfoImgUrl = "url('./img/main/run-info/"
+
+        if (BMS_Status == "대기중") {
+          runInfoImgUrl += "waiting.png')";
+          runInfoSecImgStyle.color = "white";
+        } else if (BMS_Status == "방전중")
+          runInfoImgUrl += "discharge.png')";
+        else
+          runInfoImgUrl += "charging.png')";
+
+        runInfoSecImgStyle.bacgroundImage = runInfoImgUrl;
+
+        /* Line Chagne */
+        var C = parseFloat(R_PCSPower);
+        var D = parseFloat(R_ESSIn);
+        var E = parseFloat(R_ESSOut);
+
+        /*  get Line */
+
+        var line1 = document.getElementById("line1");
+        line1.src = MainImgSrc;
+
+        var line2 = document.getElementById("line2");
+        line2.src = MainImgSrc;
+
+        var line3 = document.getElementById("line3");
+        line3.src = MainImgSrc;
+
+        var line4 = document.getElementById("line4");
+        line4.src = MainImgSrc;
+
+        var line5 = document.getElementById("line5");
+        line5.src = MainImgSrc;
+
+        switch (BMS_Status) {
+          case "충전중":
+            var A = parseFloat(R_PVOut) - parseFloat(R_PCSPower);
+            var B = parseFloat(R_PCSPower);
+
+            A > 0 ? line1.src += "1.gif" : line1.src += "de_line1.png"; //animation A
+
+            B > 0 ? line2.src += "2.gif" // animation B
+                    : line2.src += "de_line2.png";
+
+            D > 0 ? line3.src += "3.gif" // animation C
+                    : line3.src += "de_line3.png";
+
+            line4.src += "de_line4.png"; // off D
+            line5.src += "de_line5.png"; // off E
+
+            break;
+
+          case "방전중":
+            var A = parseFloat(R_PVOut);
+            var B = 0;
+
+            A > 0 ? line1.src += "1.gif" //animation A
+                    : line1.src += "de_line1.png";
+
+            if (C > 0) {
+              line4.src += "4.gif"; // F off
+              line4.style.top = "225px";
+            } else {
+              line4.src += "de_line4.png";
+            }
+
+            if (E > 0) {
+              line5.src += "5.gif"; //animation E
+              line5.style.left = "583px";
+              line5.style.top = "227px";
+            } else {
+              line5.src += "de_line5.png";
+            }
+
+            line2.src += "de_line2.png"; // B off
+            line3.src += "de_line3.png"; // D off
+
+            break;
+
+          case "대기중":
+            var A = parseFloat(R_PVOut) - parseFloat(R_PCSPower);
+            var B = parseFloat(R_PCSPower);
+
+            A > 0 ? line1.src += "1.gif" //animation A
+                    : line1.src += "de_line1.png";
+
+            line2.src += "de_line2.png"; // B off
+            line3.src += "de_line3.png"; // D off
+            line5.src += "de_line5.png"; // E off
+            line4.src += "de_line4.png"; // F off
+
+            break;
+
+        }
+
+
+        document.getElementById("FigureA").innerHTML = A.toFixed(1);
+        document.getElementById("FigureB").innerHTML = B.toFixed(1);
+        document.getElementById("FigureC").innerHTML = C.toFixed(1);
+        document.getElementById("FigureD").innerHTML = D.toFixed(1);
+        document.getElementById("FigureE").innerHTML = E.toFixed(1);
+
+        var img = document.getElementById("power-system-battery");
+        img.src = MainImgSrc;
+
+        var temp = Number(R_SOC);
+
+        if (0 <= temp && temp <= 5)
+          img.src += "battery1.png";
+        else if (6 <= temp && temp <= 30)
+          img.src += "battery2.png";
+        else if (31 <= temp && temp <= 50)
+          img.src += "battery3.png";
+        else if (51 <= temp && temp <= 75)
+          img.src += "battery4.png";
+        else if (75 <= temp && temp <= 94)
+          img.src += "battery5.png";
+        else
+          img.src += "battery.png";
+
+        img.style.width = "120px";
+        img.style.height = "auto";
+
+      }
+
+      /* Battery Change */
+      var img = document.getElementById("power-system-battery");
+      var temp = Number("");
+      img.src = MainImgSrc;
+
+      if (0 <= temp && temp <= 5)
+        img.src += "battery1.png";
+      else if (6 <= temp && temp <= 30)
+        img.src += "battery2.png";
+      else if (31 <= temp && temp <= 50)
+        img.src += "battery3.png";
+      else if (51 <= temp && temp <= 75)
+        img.src += "battery4.png";
+      else if (75 <= temp && temp <= 94)
+        img.src += "battery5.png";
+      else
+        img.src += "battery.png";
+    </script>
+
+    <script th:inline="javascript">
+      function updateDailyAndMonthlyData() {
+        var dailyData = /*[[${dailyData}]]*/ {};
+        var monthData = /*[[${monthData}]]*/ {};
+        // 당일 실적
+        check_unit2(dailyData.totalPowerGeneration, 'run-result-value1', 'subRight1');
+        check_unit2(dailyData.totalCharge, 'run-result-value2', 'subRight2');
+        check_unit2(dailyData.totalDischarge, 'run-result-value3', 'subRight3');
+
+        // 당월 실적
+        check_unit2(monthData.totalPowerGeneration, 'run-result-value4', 'subRight4');
+        check_unit2(monthData.totalCharge, 'run-result-value5', 'subRight5');
+        check_unit2(monthData.totalDischarge, 'run-result-value6', 'subRight6');
+      }
+
+
+      $(document).ready(function() {
+        // 다른 로직 실행 후에 실적 데이터를 업데이트
+        updateDailyAndMonthlyData();
+      });
+    </script>
+
+    <!--mainDetail-->
+
+  </div>
+  <!--Body Wrapper-->
+  <div th:insert="~{fragments/footer :: footer}"></div>
+
+<!--  <div class="bottomWrapper">-->
+<!--    <div class="bottomLeft">-->
+<!--      <div class="bottom_logo">-->
+<!--        <img class="bottomLeft" src="./img/top/ubnetsys.png" alt="(주)유비넷시스">-->
+<!--      </div>-->
+<!--      <div class="bottom_logo_name">-->
+<!--        <span>(주)유비넷시스</span>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--    <div class="bottomRight" onload="dptime()">-->
+<!--      <button class="bottom_button" id="logout" onclick="location.href='/pms/logout'"></button>-->
+<!--      <div class="bottom_date" id="daydate">-->
+<!--        <span class="date" id="date2">2024-04-03 (수) </span><span class="time" id="time"></span>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
+
+<!--  <script type="text/javascript">-->
+<!--    function dpTime() {-->
+<!--      var now = new Date();-->
+<!--      year = now.getFullYear();-->
+<!--      month = now.getMonth() + 1;-->
+<!--      date = now.getDate();-->
+<!--      hours = now.getHours();-->
+<!--      minutes = now.getMinutes();-->
+<!--      seconds = now.getSeconds();-->
+<!--      if (month < 10) {-->
+<!--        month = "0" + month;-->
+<!--      }-->
+<!--      if (date < 10) {-->
+<!--        date = "0" + date;-->
+<!--      }-->
+<!--      if (hours > 12) {-->
+<!--        hours -= 12;-->
+<!--        ampm = "오후 ";-->
+<!--      } else {-->
+<!--        ampm = "오전 ";-->
+<!--      }-->
+<!--      if (hours < 10) {-->
+<!--        hours = "0" + hours;-->
+<!--      }-->
+<!--      if (minutes < 10) {-->
+<!--        minutes = "0" + minutes;-->
+<!--      }-->
+<!--      if (seconds < 10) {-->
+<!--        seconds = "0" + seconds;-->
+<!--      }-->
+<!--      document.getElementById("date2").innerHTML = year + "-" + month + "-" + date + " " + getTodayLabel() + " ";-->
+<!--      document.getElementById("time").innerHTML = ampm + hours + ":" + minutes + ":" + seconds;-->
+
+<!--    }-->
+
+<!--    function getTodayLabel() {-->
+
+<!--      var week = new Array('(일)', '(월)', '(화)', '(수)', '(목)', '(금)', '(토)');-->
+
+<!--      var today = new Date().getDay();-->
+<!--      var todayLabel = week[today];-->
+
+<!--      return todayLabel;-->
+<!--    }-->
+
+<!--    setTimeout(dpTime(), 1000);-->
+<!--    setInterval(dpTime, 1000);-->
+<!--  </script>-->
+
+</div>
+</body></html>
