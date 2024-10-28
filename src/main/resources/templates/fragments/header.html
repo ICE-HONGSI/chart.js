@@ -80,14 +80,14 @@
                 <p th:text="15 + '°C'"></p>
             </div>
             <div class="precipitation">
-                <img th:src="@{'/img/header/' + (${precipitation == 'Clear'} ? 'rain' : 'clear') + '.png'}" alt="날씨 아이콘">
+                <img th:src="@{'/img/header/' + (${precipitation == 'Clear'} ? 'clear' : 'rain') + '.png'}" alt="날씨 아이콘">
             </div>
         </div>
     </div>
     <div class="menu">
         <a href="#" onclick="setActive(this)">메인</a>
         <a href="#" onclick="setActive(this)">트렌드</a>
-        <a href="#" onclick="setActive(this)">리포트</a>
+        <a th:href="@{/report}" onclick="setActive(this)">리포트</a>
         <a href="#" onclick="setActive(this)">운영</a>
         <a th:href="@{/bms/rack}" onclick="setActive(this)">제어</a>
     </div>
