@@ -6,14 +6,7 @@
     <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css" />
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
-    <div th:replace="fragments/header :: headerFragment"></div>
     <style>
-        body {
-            background-color: #23272a;
-            margin: 0;
-            font-family: Pretendard, sans-serif;
-        }
-
         header {
             background-color: #23272a;
             color: white;
@@ -77,6 +70,11 @@
         .menu a:hover {
             color: #55e0ae;
         }
+        body {
+            background-color: #23272a;
+            margin: 0;
+            font-family: Pretendard, sans-serif;
+        }
 
         select {
             margin-right: 5px;
@@ -118,7 +116,7 @@
             background: #999999;
         }
 
-        .header {
+        .header1 {
             display: flex;
             justify-content: space-between;
             padding: 1rem 20px;
@@ -216,11 +214,12 @@
         }
     </style>
 </head>
+<header th:insert="~{fragments/header :: header}"></header>
 <body>
 <div class="rap_background">
     <div class='rap'>
         <h2 class="report">운영 리포트</h2>
-        <div class="header">
+        <div class="header1">
             <div class="btn prevDay"></div>
             <h2 class='dateTitle'></h2>
             <div class="btn nextDay"></div>
