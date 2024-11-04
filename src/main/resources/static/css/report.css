@@ -25,11 +25,12 @@ body {
 
 /*Total Frame height*/
 .backGround {
-    height: 1060px
+    height: 1000px
 }
 
 .topMenu {
     height: 60px;
+    width: 500px;
 }
 
 .bottomWrapper {
@@ -323,6 +324,9 @@ body {
 
     .menu ul li {
         width: 20%;
+        line-height: 80px; /* 헤더 높이에 맞추어 라인 높이 조정 */
+        color: white;
+        margin-right: 40px; /
     }
 
     /* bottom */
