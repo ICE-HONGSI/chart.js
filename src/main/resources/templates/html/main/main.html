@@ -16,176 +16,177 @@
 <!--  <link rel="stylesheet" type="text/css" href="./css/trend.css">-->
 <!--  <link rel="stylesheet" type="text/css" href="./css/report.css">-->
 <!--  <link rel="stylesheet" type="text/css" href="./css/control.css">-->
-  <link rel="stylesheet" type="text/css" href="./css/energuard.css" th:href="@{/css/energuard.css}">
+  <link rel="stylesheet" href="../../../static/css/energuard.css" th:href="@{/css/energuard.css}">
+  <link rel="stylesheet" href="../../static/css/top.css" th:href="@{/css/top.css}">
   <link rel="stylesheet" type="text/css" href="./css/footer.css">
   <link rel="icon" href="data:;base64,iVBORw0KGgo=">
 
   <script>
 
-    console.log("Ver. 241028. \nby WALAB 2024-2 Capstone Project");
-
-    var setCookie = function(name, value) {
-      var date = new Date();
-      date.setTime(date.getTime() + 1000 * 10 * 60); //cookie 10분 지속
-      document.cookie = name + '=' + value + ';expires=' + date.toUTCString() + ';path=/';
-    };
-
-    var getCookie = function(name) {
-      var value = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
-      return value? value[2] : null;
-    };
-
-    const appKey = "8d4de91e1577d6361f6d18064dc6e96b";
-    var weather_name;
-    var temperature;
-    var img;
-    var d = new Date();
-
-    function change_weather(icon, temp) {
-      var status;
-      img.src = "./img/top/";
-
-      switch (icon) {
-              /*맑음*/
-        case "01d":
-        case "01n":
-        case "03n":
-        case "03d":
-          img.src += "clear.png";
-          status = "맑음";
-          break;
-
-              /* 구름 조금  */
-        case "02d":
-        case "02n":
-        case "04d":
-        case "04n":
-          img.src += "little_cloud.png";
-          status = "조금흐림";
-          break;
-
-              /*구름 많이*/
-        case "50d":
-        case "50n":
-          img.src += "cloudy.png";
-          status = "흐림";
-          break;
-
-              /*비*/
-        case "09d":
-        case "09n":
-        case "10d":
-        case "10n":
-        case "11d":
-        case "11n":
-          img.src += "rain.png";
-          status = "비";
-          break;
-
-              /*눈*/
-        case "13d":
-        case "13n":
-          img.src += "snow.png";
-          status = "눈";
-          break;
-      }
-
-      weather_name.innerHTML = status;
-      temperature.innerHTML = temp  + "˚C";
-
-      var time = String(d);
-      var month = String(d.getFullYear()) + String(d.getMonth() + 1);
-      var day = d.getDate();
-      $('.time').val(time);
-      $('.month').val(month);
-      $('.date').val(date);
-      $('.status').val(status);
-      $('.reason').val(reason);
-
-      $.ajax({
-        type : "POST",
-        url : "weatherRecord",
-        data : $('form').serialize(),
-        error : function(error) {
-          console.log("error");
-        },
-        success : function(data) {
-
-        }
-      });
-
-
-    }
-
-    $(document).ready(function () {
-      img = document.getElementById("weather");
-      weather_name = document.getElementById("weather_name");
-      temperature = document.getElementById("temp");
-
-      check_time();
-      setInterval(check_time, 1 * 1000 * 60 * 5); //5분마다 실행
-
-    });
-
-    function check_time() {
-
-      /* 데이터가 없거나 현재시간 - 마지막call시간 >=5 */
-      if(getCookie("icon") == null)
-      {
-        setCookie("pre_time", d.getHours()*60 + d.getMinutes());
-        setCookie("pre_date", d.getDate());
-        reason="0";
-        findWeatherDetails();
-      }
-      else if(d.getHours()*60 + d.getMinutes() - getCookie("pre_time") >= 5 || d.getDate() != getCookie("pre_date"))
-      {
-        setCookie("pre_time", d.getHours()*60 + d.getMinutes());
-        setCookie("pre_date", d.getDate());
-        reason="1";
-        findWeatherDetails();
-      }
-      else
-      {
-        reason="2";
-        change_weather(getCookie("icon"), getCookie("temp"));
-      }
-
-    }
-
-    //2nd
-    function findWeatherDetails() {
-      var region = "lat=" + "36.1" + "&lon=" + "130.3";
-      var searchLink = "https://api.openweathermap.org/data/2.5/weather?" + region + "&appid=" + appKey;
-
-      httpRequestAsync(searchLink, theResponse);
-    }
-
-    function theResponse(response) {
-      var jsonObject = JSON.parse(response);
-      setCookie("icon", jsonObject.weather[0].icon);
-      setCookie("temp", (jsonObject.main.temp-273).toFixed(0));
-
-      change_weather(jsonObject.weather[0].icon, (parseInt(jsonObject.main.temp - 273)).toFixed(0));
-    }
-
-
-    //3rd
-    function httpRequestAsync(url, callback) {
-      var d = new Date();
-      var httpRequest = new XMLHttpRequest();
-      httpRequest.onreadystatechange = () =>
-      {
-        if (httpRequest.readyState == 4 && httpRequest.status == 200)
-          callback(httpRequest.responseText);
-      }
-      httpRequest.open("GET", url, true); // true for asynchronous
-      httpRequest.send();
-    }
+    // console.log("Ver. 241028. \nby WALAB 2024-2 Capstone Project");
+    //
+    // var setCookie = function(name, value) {
+    //   var date = new Date();
+    //   date.setTime(date.getTime() + 1000 * 10 * 60); //cookie 10분 지속
+    //   document.cookie = name + '=' + value + ';expires=' + date.toUTCString() + ';path=/';
+    // };
+    //
+    // var getCookie = function(name) {
+    //   var value = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
+    //   return value? value[2] : null;
+    // };
+    //
+    // const appKey = "8d4de91e1577d6361f6d18064dc6e96b";
+    // var weather_name;
+    // var temperature;
+    // var img;
+    // var d = new Date();
+    //
+    // function change_weather(icon, temp) {
+    //   var status;
+    //   img.src = "./img/top/";
+    //
+    //   switch (icon) {
+    //           /*맑음*/
+    //     case "01d":
+    //     case "01n":
+    //     case "03n":
+    //     case "03d":
+    //       img.src += "clear.png";
+    //       status = "맑음";
+    //       break;
+    //
+    //           /* 구름 조금  */
+    //     case "02d":
+    //     case "02n":
+    //     case "04d":
+    //     case "04n":
+    //       img.src += "little_cloud.png";
+    //       status = "조금흐림";
+    //       break;
+    //
+    //           /*구름 많이*/
+    //     case "50d":
+    //     case "50n":
+    //       img.src += "cloudy.png";
+    //       status = "흐림";
+    //       break;
+    //
+    //           /*비*/
+    //     case "09d":
+    //     case "09n":
+    //     case "10d":
+    //     case "10n":
+    //     case "11d":
+    //     case "11n":
+    //       img.src += "rain.png";
+    //       status = "비";
+    //       break;
+    //
+    //           /*눈*/
+    //     case "13d":
+    //     case "13n":
+    //       img.src += "snow.png";
+    //       status = "눈";
+    //       break;
+    //   }
+    //
+    //   weather_name.innerHTML = status;
+    //   temperature.innerHTML = temp  + "˚C";
+    //
+    //   var time = String(d);
+    //   var month = String(d.getFullYear()) + String(d.getMonth() + 1);
+    //   var day = d.getDate();
+    //   $('.time').val(time);
+    //   $('.month').val(month);
+    //   $('.date').val(date);
+    //   $('.status').val(status);
+    //   $('.reason').val(reason);
+    //
+    //   $.ajax({
+    //     type : "POST",
+    //     url : "weatherRecord",
+    //     data : $('form').serialize(),
+    //     error : function(error) {
+    //       console.log("error");
+    //     },
+    //     success : function(data) {
+    //
+    //     }
+    //   });
+    //
+    //
+    // }
+    //
+    // $(document).ready(function () {
+    //   img = document.getElementById("weather");
+    //   weather_name = document.getElementById("weather_name");
+    //   temperature = document.getElementById("temp");
+    //
+    //   check_time();
+    //   setInterval(check_time, 1 * 1000 * 60 * 5); //5분마다 실행
+    //
+    // });
+    //
+    // function check_time() {
+    //
+    //   /* 데이터가 없거나 현재시간 - 마지막call시간 >=5 */
+    //   if(getCookie("icon") == null)
+    //   {
+    //     setCookie("pre_time", d.getHours()*60 + d.getMinutes());
+    //     setCookie("pre_date", d.getDate());
+    //     reason="0";
+    //     findWeatherDetails();
+    //   }
+    //   else if(d.getHours()*60 + d.getMinutes() - getCookie("pre_time") >= 5 || d.getDate() != getCookie("pre_date"))
+    //   {
+    //     setCookie("pre_time", d.getHours()*60 + d.getMinutes());
+    //     setCookie("pre_date", d.getDate());
+    //     reason="1";
+    //     findWeatherDetails();
+    //   }
+    //   else
+    //   {
+    //     reason="2";
+    //     change_weather(getCookie("icon"), getCookie("temp"));
+    //   }
+    //
+    // }
+    //
+    // //2nd
+    // function findWeatherDetails() {
+    //   var region = "lat=" + "36.1" + "&lon=" + "130.3";
+    //   var searchLink = "https://api.openweathermap.org/data/2.5/weather?" + region + "&appid=" + appKey;
+    //
+    //   httpRequestAsync(searchLink, theResponse);
+    // }
+    //
+    // function theResponse(response) {
+    //   var jsonObject = JSON.parse(response);
+    //   setCookie("icon", jsonObject.weather[0].icon);
+    //   setCookie("temp", (jsonObject.main.temp-273).toFixed(0));
+    //
+    //   change_weather(jsonObject.weather[0].icon, (parseInt(jsonObject.main.temp - 273)).toFixed(0));
+    // }
+    //
+    //
+    // //3rd
+    // function httpRequestAsync(url, callback) {
+    //   var d = new Date();
+    //   var httpRequest = new XMLHttpRequest();
+    //   httpRequest.onreadystatechange = () =>
+    //   {
+    //     if (httpRequest.readyState == 4 && httpRequest.status == 200)
+    //       callback(httpRequest.responseText);
+    //   }
+    //   httpRequest.open("GET", url, true); // true for asynchronous
+    //   httpRequest.send();
+    // }
   </script>
 </head>
 
 <body class="backGround">
-<div th:insert="~{fragments/header :: headerFragment}"></div>
+<header th:insert="~{fragments/header :: header}"></header>
 <!--<div class="topMenu">-->
 <!--  <div class="logo">-->
 <!--    <div class="logo_image">-->
