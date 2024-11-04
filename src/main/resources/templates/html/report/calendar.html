@@ -4,78 +4,15 @@
     <meta charset="UTF-8">
     <title>운영 리포트</title>
     <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css"/>
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css" />
+    <link rel="stylesheet" href="../../../static/css/energuard.css" th:href="@{/css/energuard.css}">
+    <link rel="stylesheet"  href="../../../static/css/top.css" th:href="@{/css/top.css}">
     <style>
-        header {
-            background-color: #23272a;
-            color: white;
-            padding: 10px 20px;
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .weather-info {
-            display: flex;
-            align-items: center;
-        }
-
-        .weather-info img {
-            height: 50px;
-            width: auto;
-            margin-right: 10px;
-        }
-
-        .left-image img {
-            width: 200px;
-            height: auto;
-        }
-
-        .temperature-structure {
-            display: flex;
-            align-items: center;
-            margin-left: 15%;
-        }
-
-        .temperature {
-            font-size: 24px;
-            margin-right: 10px;
-        }
-
-        .precipitation img {
-            height: 50px;
-            width: 50px;
-        }
-
-        .menu {
-            display: flex;
-            align-items: center;
-            margin-right: 5%;
-            font-size: 20px;
-        }
-
-        .menu a {
-            color: white;
-            text-decoration: none;
-            padding: 10px 15px;
-            transition: color 0.3s;
-        }
-
-        .menu a.active {
-            color: #55e0ae;
-        }
-
-        .menu a:hover {
-            color: #55e0ae;
-        }
         body {
             background-color: #23272a;
             margin: 0;
-            font-family: Pretendard, sans-serif;
         }
-
         select {
             margin-right: 5px;
             padding: 5px;
@@ -94,14 +31,14 @@
         .grid {
             margin-left: -50%;
             display: grid;
-            grid-template-columns: repeat(7, 220px);
+            grid-template-columns: repeat(7, 1fr);
             grid-gap: 1px;
         }
 
         .dateCell {
             background-color: #464c54;
             color: white;
-            font-size: 18px;
+            font-size: 1.1rem;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -145,26 +82,26 @@
             background-image: url('/img/report/board.png');
             background-size: cover;
             background-position: center;
-            margin-right: 5%;
+            width: 100%;
             margin-left: 5%;
-            height: 100vh;
+            height: 120vh;
         }
 
         .rap {
             padding: 0 1.4rem;
-            margin-left: 38%;
+            margin-left: 32.5%;
         }
 
         .report {
             color: white;
             font-size: 25px;
             position: relative;
-            top: 7px;
+            top: 8px;
             left: 15%;
         }
 
         .calendar {
-            margin-top: 3%;
+            margin-top: -1%;
         }
 
         .dataInfo {
@@ -174,13 +111,15 @@
             padding: 0.1rem;
             text-align: center;
             width: 90%;
-            margin-top: 0.3rem;
+            margin-top: 0.2rem;
             display: flex;
             justify-content: space-between;
         }
 
         .dateTitle {
             color: white;
+            font-size: 1.5rem;
+            margin-top: -4%;
         }
 
         .dataFont {
@@ -191,19 +130,19 @@
         }
 
         .generationColor {
-            font-size: 17px;
+            font-size: 1.1rem;
             font-weight: bold;
             color: #fabc12;
         }
 
         .transmissionColor {
-            font-size: 17px;
+            font-size: 1.1rem;
             font-weight: bold;
             color: #55e0ae;
         }
 
         .dischargeColor {
-            font-size: 17px;
+            font-size: 1.1rem;
             font-weight: bold;
             color: #ff5778;
         }
@@ -239,6 +178,7 @@
         </div>
     </div>
 </div>
+
 
 
 <script>
@@ -319,6 +259,6 @@
 </script>
 
 </body>
-<footer th:insert="~{fragments/footer :: footer}"></footer>
-
+<div th:insert="~{fragments/footer :: footer}"></div>
 </html>
+

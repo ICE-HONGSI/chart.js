@@ -127,7 +127,7 @@ body {
 }
 
 .menu ul li {
-	float: right;
+	float: left;
 	list-style: none;
 	margin: 0;
 	margin-left: 5px;
@@ -273,79 +273,79 @@ body {
 	body {
 		margin-left: 5%;
 	}
-	
+
 	/* top */
 	.logo {
 		margin: 10 10 0 10;
 	}
-	
+
 	.logo_weather {
 		display: none;
 	}
-	
+
 	.compName {
 		width : 20%;
 	}
-	
+
 	.topMenu {
 		width : 100%;
 		margin: 0 0 0 0;
 	}
-	
+
 	.logo .logo_image {
 		width: 50%;
 		height : auto;
 		margin-right: 0;
 	}
-	
+
 	.logo .logo_image img {
-	    width: 100%;
-	    height : auto;
+		width: 100%;
+		height : auto;
 	}
-	
+
 	.logo .logo_name {
 		text-align : right;
 		border-right: none;
 		margin: 10px 0px 0px 20px;
 		width: 40%;
 	}
-	
+
 	#compName {
-		font-size: 15px; 
+		font-size: 15px;
 		width: auto;
 	}
-	
+
 	/* menu */
 	.menu {
 		width: 100%;
 		margin-bottom: 10px;
 	}
-	
+
 	.menu ul li {
 		width: 20%;
 	}
-	
+
 	/* bottom */
 	.bottomRight {
-    float: right;
-    width: 100px;
+		float: right;
+		width: 100px;
 	}
 	.bottomLeft {
-	    float: left;
-	    width: 164px;
+		float: left;
+		width: 164px;
 	}
-	
+
 	.bottomLeft .bottom_logo_name span {
 		width: 100px;
 	}
-	
+
 	.bottomRight .bottom_date .date {
 		display: none;
 	}
-	
+
 	#logout {
-   		transform: scale(0.8);
-   		margin-right: -40px;
+		transform: scale(0.8);
+		margin-right: -40px;
 	}
-	
+
 }
